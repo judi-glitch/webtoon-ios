@@ -1,0 +1,10 @@
+{
+  "name": "webtoon-lab",
+  "version": "1.0.0",
+  "description": "내 인생 웹툰 TOP 5 연구소",
+  "dependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0"
+  }
+}

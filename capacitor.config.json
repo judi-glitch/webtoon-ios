@@ -1,0 +1,6 @@
+{
+  "appId": "com.mywebtoon.top5",
+  "appName": "웹툰연구소",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
