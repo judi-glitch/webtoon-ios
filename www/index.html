@@ -2,19 +2,15 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <!-- 아이폰 14 노치 대응(viewport-fit=cover) 및 입력창 터치 시 강제 확대 방지 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  
-  <!-- iOS PWA 전용 풀스크린 앱 설정 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="웹툰&소설연구소">
+  <meta name="apple-mobile-web-app-title" content="웹툰·소설 아카이브">
   <meta name="theme-color" content="#0a0a0a">
   <meta name="mobile-web-app-capable" content="yes">
 
-  <title>내 인생 웹툰 & 원작 소설 연구소</title>
+  <title>웹툰·소설 아카이브</title>
   
-  <!-- 아이폰 홈 화면 아이콘 & PWA 매니페스트 자동 생성 스크립트 -->
   <script>
     (function() {
       try {
@@ -43,7 +39,7 @@
 
         ctx.font = '900 64px -apple-system, BlinkMacSystemFont, sans-serif';
         ctx.fillStyle = '#f3e8ff';
-        ctx.fillText('원작소설', 256, 365);
+        ctx.fillText('ARCHIVE', 256, 365);
 
         var iconUrl = canvas.toDataURL('image/png');
 
@@ -59,8 +55,8 @@
         document.head.appendChild(favIcon);
 
         var manifest = {
-          name: "내 인생 웹툰 & 원작 소설 연구소",
-          short_name: "웹툰소설연구소",
+          name: "웹툰·소설 아카이브",
+          short_name: "웹툰소설아카이브",
           start_url: ".",
           display: "standalone",
           background_color: "#0a0a0a",
@@ -86,10 +82,7 @@
     })();
   </script>
 
-  <!-- Pretendard 한글 폰트 -->
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -103,12 +96,9 @@
     }
   </script>
 
-  <!-- React 18 & ReactDOM CDN -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  
-  <!-- Babel Standalone (JSX 컴파일용) -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js'"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js'"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js'"></script>
 
   <style>
     :root {
@@ -147,12 +137,32 @@
   </style>
 </head>
 <body class="bg-neutral-950 text-neutral-100 antialiased selection:bg-purple-600 selection:text-white">
-  <div id="root"></div>
+  <div id="root"><div style="padding:24px;color:#f5f5f5;font-family:system-ui,sans-serif">아카이브를 불러오는 중입니다…</div></div>
+  <div id="fatal-error" role="alert" style="display:none;position:fixed;inset:0;z-index:99999;background:#0a0a0a;color:#fff;padding:24px;font:14px/1.6 system-ui,sans-serif;overflow:auto">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:12px">프로그램을 실행하지 못했습니다</h2>
+    <p>인터넷 연결 또는 외부 스크립트 로딩 문제일 수 있습니다. 아래 오류 내용을 확인해 주세요.</p>
+    <pre id="fatal-error-message" style="white-space:pre-wrap;background:#18181b;padding:12px;border-radius:8px;margin-top:12px"></pre>
+    <button onclick="location.reload()" style="margin-top:16px;background:#7c3aed;padding:10px 16px;border-radius:8px;color:white">다시 시도</button>
+  </div>
+  <script>
+    window.addEventListener('error', function(event) {
+      var box = document.getElementById('fatal-error');
+      var msg = document.getElementById('fatal-error-message');
+      if (!box || !msg) return;
+      var details = event.message || ('스크립트 로딩 실패: ' + (event.target && (event.target.src || event.target.href) || '알 수 없는 리소스'));
+      msg.textContent = details + (event.filename ? '\n파일: ' + event.filename + ':' + event.lineno : '');
+      box.style.display = 'block';
+    }, true);
+    window.addEventListener('unhandledrejection', function(event) {
+      var box = document.getElementById('fatal-error');
+      var msg = document.getElementById('fatal-error-message');
+      if (box && msg) { msg.textContent = String(event.reason || '알 수 없는 비동기 오류'); box.style.display = 'block'; }
+    });
+  </script>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef } = React;
 
-    // Lucide Icons SVG 헬퍼 컴포넌트
     const createIcon = (paths) => ({ className = "w-4 h-4", ...props }) => (
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
@@ -169,14 +179,10 @@
       </svg>
     );
 
-    const Trophy = createIcon(
+    const BookOpen = createIcon(
       <>
-        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-        <path d="M4 22h16" />
-        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
       </>
     );
 
@@ -214,20 +220,6 @@
       </>
     );
 
-    const ArrowUp = createIcon(
-      <>
-        <path d="m5 12 7-7 7 7" />
-        <path d="M12 19V5" />
-      </>
-    );
-
-    const ArrowDown = createIcon(
-      <>
-        <path d="M12 5v14" />
-        <path d="m19 12-7 7-7-7" />
-      </>
-    );
-
     const Flame = createIcon(
       <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
     );
@@ -262,13 +254,6 @@
       <>
         <path d="M18 6 6 18" />
         <path d="m6 6 12 12" />
-      </>
-    );
-
-    const BookOpen = createIcon(
-      <>
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
       </>
     );
 
@@ -313,175 +298,125 @@
       </>
     );
 
-    const Bookmark = createIcon(
-      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-    );
-
-    const FileText = createIcon(
+    const Bell = createIcon(
       <>
-        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" x2="8" y1="13" y2="13" />
-        <line x1="16" x2="8" y1="17" y2="17" />
-        <line x1="10" x2="8" y1="9" y2="9" />
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+        <path d="M10.33 21a1.94 1.94 0 0 0 3.34 0" />
       </>
     );
 
-    // 대표 유명 웹툰 프리셋 데이터베이스 (원작 소설 정보 연동 포함)
+    const Bookmark = createIcon(
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    );
+
+    const Tag = createIcon(
+      <>
+        <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+        <circle cx="7" cy="7" r="1.5" />
+      </>
+    );
+
+    // 프리셋 웹툰 데이터 (원작 소설 정보, 링크, 소장 분류 카테고리 포함)
     const PRESET_WEBTOONS = {
       "나 혼자만 레벨업": {
         genre: "현대 판타지 / 헌터 액션",
-        worldSetting: "세계 각지에 마물이 나오는 '게이트'와 마력을 각성한 '헌터'들이 공존하는 현대 세계. 하급 E급 헌터에게만 유일하게 시스템 창이 보이며 무한 성장이 가능해짐.",
+        worldSetting: "세계 각지에 마물이 나오는 '게이트'와 마력을 각성한 '헌터'들이 공존하는 현대 세계.",
         characterName: "성진우 (그림자 군주)",
         characterRole: "주인공 / 그림자 군주",
         combatPower: 99999,
         combatTier: "EX (군주급 / 행성 붕괴급)",
         stats: { attack: 99, defense: 95, speed: 99, mana: 100, intellect: 92 },
-        background: "E급 최약체 헌터였으나 카르테논 신전의 이중 던전에서 죽음을 앞두고 '시스템'의 플레이어로 간택되어 독자적인 레벨업 권능과 그림자 추출 능력을 얻고 세계의 멸망을 막아서는 유일무이한 그림자 군주로 각성함.",
+        background: "E급 최약체 헌터였으나 시스템의 플레이어로 간택되어 그림자 군주로 각성함.",
         themeColor: "from-purple-900 to-indigo-950",
         badgeColor: "bg-purple-600",
-        defaultReason: "최약체에서 최강자로 거듭나는 카타르시스와 역대급 작화 퀄리티, 그림자 군단을 소환할 때 '일어나라' 대사의 전율 때문에 입덕함!",
-        novelInfo: {
-          author: "추공 (Chugong)",
-          publisher: "디앤씨미디어 (D&C Media)",
-          platform: "카카오페이지 (KakaoPage)",
-          status: "완결 (본편 270화 + 외전)",
-          synopsis: "마력 없는 인류 최약체 E급 헌터 성진우. 이중 던전의 사선에서 살아남은 그에게 홀로 보인 기묘한 퀘스트 창. '레벨업을 할 수 있게 되었습니다.' 웹소설계에 한 획을 그은 역대급 헌터물 원작 소설.",
-          searchUrl: "https://page.kakao.com/content/47108398",
-          ridiUrl: "https://ridibooks.com/books/212001479"
-        }
+        defaultReason: "최약체에서 최강자로 거듭나는 카타르시스와 그림자 군단 연출이 압권!",
+        novelTitle: "나 혼자만 레벨업 (원작 소설)",
+        novelAuthor: "추공",
+        novelPlatform: "카카오페이지 (KakaoPage)",
+        novelUrl: "https://page.kakao.com/content/48624838",
+        novelChapters: "완결 (본편 270화 + 외전)",
+        novelSynopsis: "E급 헌터 성진우. 이중 던전에서 죽음을 맞이하기 직전, 기괴한퀘스트 창이 눈앞에 나타났다. 살고 싶다면 내게 복종하라!",
+        novelCategory: "현대판타지 / 헌터"
       },
       "전지적 독자 시점": {
-        genre: "아포칼립스 / 어반 판타지",
-        worldSetting: "멸망해버린 소설 '멸살법'의 현실화. 도깨비들이 주관하는 성좌 후원형 스타 스트림 생중계 시나리오 속에서 생존과 진실을 찾아 나아가는 세계.",
+        genre: "아포칼립스 / 판타지",
+        worldSetting: "멸망해버린 소설 '멸살법'의 현실화. 성좌 후원형 스타 스트림 생중계 세계관.",
         characterName: "유중혁 (패왕)",
         characterRole: "소설 속 주인공 / 회귀자",
         combatPower: 88500,
         combatTier: "SSS+ (신화급 도전자)",
         stats: { attack: 96, defense: 92, speed: 94, mana: 88, intellect: 84 },
-        background: "수백 번의 삶을 회귀하며 멸망을 막기 위해 고독하게 칼을 갈아온 패왕. 주인공 김독자의 개입으로 이전 회차와 전혀 다른 변수와 결말을 마주하게 됨.",
+        background: "수백 번의 삶을 회귀하며 멸망을 막기 위해 고독하게 칼을 갈아온 패왕.",
         themeColor: "from-blue-900 to-slate-950",
         badgeColor: "bg-blue-600",
-        defaultReason: "탄탄한 성좌 메타포와 독자와 주인공의 애증 관계, 방대한 복선 회수가 소름 돋아서 끝까지 몰입해서 본 인생작.",
-        novelInfo: {
-          author: "싱숑 (Sing-Shong)",
-          publisher: "문피아 / 판타오션",
-          platform: "문피아 & 네이버 시리즈 / 카카오페이지",
-          status: "완결 (본편 551화)",
-          synopsis: "오직 나만이, 이 세계의 결말을 알고 있다. 평범한 직장인이자 웹소설 '멸망한 세계에서 살아남는 세 가지 방법'의 유일한 독자였던 김독자가 진짜로 멸망해버린 세계 속에서 살아남는 서사.",
-          searchUrl: "https://series.naver.com/novel/detail.series?productNo=4765955",
-          ridiUrl: "https://ridibooks.com/books/212003734"
-        }
+        defaultReason: "탄탄한 성좌 메타포와 독자와 주인공의 애증 관계, 방대한 복선 회수.",
+        novelTitle: "전지적 독자 시점 (원작 소설)",
+        novelAuthor: "싱숑",
+        novelPlatform: "문피아 / 네이버 시리즈",
+        novelUrl: "https://series.naver.com/novel/detail.series?productNo=4735515",
+        novelChapters: "완결 (본편 551화)",
+        novelSynopsis: "오직 나만이, 이 세계의 결말을 알고 있다. 웹소설 '멸망한 세계에서 살아남는 세 가지 방법'이 현실이 되었다.",
+        novelCategory: "판타지 / 아포칼립스"
       },
       "화산귀환": {
         genre: "신무협 / 환생",
-        worldSetting: "십만대산에서 천마를 참살하고 전멸한 화산파. 백 년의 세월이 흐른 뒤 망해버린 화산파의 후예들을 다시 천하제일문파로 재건하는 도문(道門) 무림 세계관.",
+        worldSetting: "십만대산에서 천마를 참살하고 전멸한 화산파. 백 년 뒤 망해버린 화산파의 재건.",
         characterName: "청명 (매화검존 / 화산신룡)",
-        characterRole: "화산파 23대 제자 (전생 화산 매화검존)",
+        characterRole: "화산파 23대 제자",
         combatPower: 92000,
         combatTier: "SSS (초절정 천하제일검)",
         stats: { attack: 98, defense: 89, speed: 97, mana: 94, intellect: 90 },
-        background: "천마의 목을 베고 산화했던 화산의 대장로 매화검존이 아이의 몸으로 환생. 쓰러져가는 화산을 특유의 괴팍함과 압도적인 검술 실력으로 멱살 잡고 캐리함.",
+        background: "화산의 대장로 매화검존이 아이의 몸으로 환생해 화산을 멱살 잡고 캐리함.",
         themeColor: "from-rose-900 to-stone-950",
         badgeColor: "bg-rose-600",
-        defaultReason: "통쾌하고 매력적인 청명이의 참교육 액션과 화산의 사형제들이 성장하는 끈끈한 서사가 눈물샘을 자극함!",
-        novelInfo: {
-          author: "비가 (Biga)",
-          publisher: "네이버 시리즈 독점",
-          platform: "네이버 시리즈 (Naver Series)",
-          status: "연재중 (1,600화 이상)",
-          synopsis: "사천백만 독자가 열광하는 최고의 무협 웹소설. 천하를 뒤흔들었던 대협 '매화검존' 청명이 100년 뒤 아이로 환생하여, 다 망해버린 가문의 화산파를 일으켜 세우기 위해 펼치는 좌충우돌 무협 성장기.",
-          searchUrl: "https://series.naver.com/novel/detail.series?productNo=4471905",
-          ridiUrl: "https://series.naver.com/novel/detail.series?productNo=4471905"
-        }
+        defaultReason: "청명이의 참교육 액션과 사형제들의 끈끈한 서사가 눈물샘을 자극함!",
+        novelTitle: "화산귀환 (원작 소설)",
+        novelAuthor: "비가",
+        novelPlatform: "네이버 시리즈",
+        novelUrl: "https://series.naver.com/novel/detail.series?productNo=4562522",
+        novelChapters: "연재 중 (1500화 이상)",
+        novelSynopsis: "화산파의 13대 제자이자 천하제일검 매화검존 청명. 천마와의 대전 후 눈을 떠보니 100년 뒤의 세상이었다.",
+        novelCategory: "무협 / 회귀"
       },
       "신의 탑": {
-        genre: "판타지 / 하이 어드벤처",
-        worldSetting: "원하는 모든 것이 있다는 거대한 미지의 탑. 신수를 다루는 선별인원들이 시험의 층을 오르며 랭커가 되기 위해 치열한 암투와 규칙 속 경쟁을 펼침.",
-        characterName: "스물다섯번째 밤 (비선별인원)",
-        characterRole: "주인공 / 슬레이어 후보 쥬 비올레 그레이스",
+        genre: "판타지 / 어드벤처",
+        worldSetting: "원하는 모든 것이 있다는 거대한 미지의 탑과 신수 세계관.",
+        characterName: "스물다섯번째 밤",
+        characterRole: "슬레이어 후보",
         combatPower: 89000,
         combatTier: "SS+ (하이랭커 상위권 잠재력)",
         stats: { attack: 93, defense: 86, speed: 90, mana: 99, intellect: 85 },
-        background: "자신의 전부였던 소녀 라헬을 쫓아 탑의 문을 스스로 열고 들어온 소년. 압도적인 신수 친화력과 카피 능력을 지녔으며 수많은 배신 속에서도 동료를 지키고자 함.",
+        background: "소녀 라헬을 쫓아 탑의 문을 스스로 열고 들어온 소년.",
         themeColor: "from-amber-900 to-stone-950",
         badgeColor: "bg-amber-600",
-        defaultReason: "방대한 층별 세계관과 매력적인 조연 캐릭터들, 신수라는 독특한 능력 체계가 주는 지적 쾌감이 최고.",
-        novelInfo: {
-          author: "SIU (작가 블로그 및 웹툰 연재 본 바탕)",
-          publisher: "네이버웹툰 오리지널",
-          platform: "네이버 웹툰 (웹툰 오리지널 작품)",
-          status: "연재중 (세계관 블로그 설정집 병행)",
-          synopsis: "자신이 모든 것인 소녀를 쫓아 탑에 들어온 소년, 그리고 그런 소년을 시험하는 탑. 네이버웹툰을 대표하는 초대형 판타지 대서사시.",
-          searchUrl: "https://comic.naver.com/webtoon/list?titleId=183559",
-          ridiUrl: "https://comic.naver.com/webtoon/list?titleId=183559"
-        }
+        defaultReason: "방대한 층별 세계관과 매력적인 조연 캐릭터들, 신수 능력 체계.",
+        novelTitle: "신의 탑 (웹툰 원작 / 연재처)",
+        novelAuthor: "SIU",
+        novelPlatform: "네이버 웹툰",
+        novelUrl: "https://comic.naver.com/webtoon/list?titleId=18355",
+        novelChapters: "연재 중",
+        novelSynopsis: "자신의 전부였던 소녀를 쫓아 탑에 들어온 소년, 그리고 그 탑을 오르는 이들의 모험.",
+        novelCategory: "정통 판타지"
       },
       "외모지상주의": {
         genre: "학원 액션 / 느와르",
-        worldSetting: "외모로 차별받던 고등학생에게 주어진 완벽한 두 번째 육체. 강북, 강서, 강남, 강동 4대 크루와 폭력 조직들의 이권 다툼이 얽힌 어두운 뒷골목 현대 활극.",
-        characterName: "박형석 (종건의 수제자)",
-        characterRole: "주인공 / 2개의 몸 보유자",
+        worldSetting: "완벽한 두 번째 육체를 얻은 고등학생과 4대 크루의 권력 다툼.",
+        characterName: "박형석",
+        characterRole: "2개의 몸 보유자",
         combatPower: 76000,
         combatTier: "S+ (1세대 마이너 왕급 돌파)",
         stats: { attack: 88, defense: 84, speed: 91, mana: 40, intellect: 82 },
-        background: "못생기고 왜소해 괴롭힘을 당하다가 잠들면 깨어나는 미남 체질의 완벽한 육체를 얻음. 복싱, 극진가라테, 시스테마 등 다양한 무술을 카피하며 성장함.",
+        background: "외모로 차별받다 잠들면 깨어나는 완벽한 미남 체질을 얻음.",
         themeColor: "from-zinc-800 to-stone-950",
         badgeColor: "bg-zinc-600",
-        defaultReason: "초반의 외모 비판 메시지부터 후반부 4대 크루 액션물의 도파민 터지는 격투 씬 때문에 매주 목요일 밤에 무조건 봄.",
-        novelInfo: {
-          author: "박태준 (Park Tae-joon)",
-          publisher: "박태준만화회사 오리지널",
-          platform: "네이버 웹툰 (웹툰 오리지널)",
-          status: "연재중",
-          synopsis: "어느 날 갑자기 완벽한 외모와 몸을 갖춘 또 다른 몸이 생겼다! 두 개의 몸을 오가며 겪는 눈부신 성장과 일진, 크루들의 화려한 액션 느와르.",
-          searchUrl: "https://comic.naver.com/webtoon/list?titleId=641253",
-          ridiUrl: "https://comic.naver.com/webtoon/list?titleId=641253"
-        }
-      },
-      "더 복서": {
-        genre: "스포츠 / 액션 드라마",
-        worldSetting: "천재 트레이너 K의 손에 발굴된 전설의 복서들. 링 위에서 펼쳐지는 삶의 무게와 순수한 재능, 폭력의 본질에 대한 탐구.",
-        characterName: "유 (THE MONSTER)",
-        characterRole: "주인공 / 무패의 세계 챔피언",
-        combatPower: 84000,
-        combatTier: "SS (인간 규격 외의 복싱 괴물)",
-        stats: { attack: 96, defense: 80, speed: 100, mana: 20, intellect: 88 },
-        background: "어린 시절의 학대로 감정을 잃어버렸으나 압도적인 체감 시간 왜곡과 반사신경을 보유한 천재. 상처뿐인 세상에서 빛을 찾아 링에 오른다.",
-        themeColor: "from-cyan-900 to-blue-950",
-        badgeColor: "bg-cyan-600",
-        defaultReason: "스포츠 만화를 넘어선 철학적인 주제 의식과 상대를 숨도 못 쉬게 몰아붙이는 압도적인 연출력이 압권.",
-        novelInfo: {
-          author: "정지훈 (Jeong Ji-hoon)",
-          publisher: "네이버웹툰 오리지널",
-          platform: "네이버 웹툰 (웹툰 오리지널 완결작)",
-          status: "완결",
-          synopsis: "인간의 한계를 뛰어넘은 복서들과 그들의 가슴 아픈 사연. 링 위에서 벌어지는 치열한 펀치와 인생에 대한 깊은 울림을 주는 명작 웹툰.",
-          searchUrl: "https://comic.naver.com/webtoon/list?titleId=736277",
-          ridiUrl: "https://comic.naver.com/webtoon/list?titleId=736277"
-        }
-      },
-      "광마회귀": {
-        genre: "무협 / 블랙코미디",
-        worldSetting: "천옥을 훔쳐 먹고 절벽에서 떨어진 광마 이자하. 점소이 시절로 회귀하여 하오문을 창건하고 미치광이의 신념으로 강호를 정리하는 이야기.",
-        characterName: "이자하 (광마 / 하오문주)",
-        characterRole: "주인공 / 미친 무림인",
-        combatPower: 87500,
-        combatTier: "SS (광기 서린 천하제일 문주)",
-        stats: { attack: 94, defense: 88, speed: 95, mana: 91, intellect: 93 },
-        background: "독기 어린 입담과 종잡을 수 없는 기행으로 적과 아군을 혼란에 빠뜨리며, 바닥 인생들의 연대와 억울함 없는 세상을 만들기 위해 검을 휘두른다.",
-        themeColor: "from-emerald-900 to-teal-950",
-        badgeColor: "bg-emerald-600",
-        defaultReason: "유쾌한 헛소리 속에 뼈가 있는 명대사들과 어디로 튈지 모르는 광마의 시원시원한 행보가 너무 중독적임.",
-        novelInfo: {
-          author: "유진성 (Yu Jin-sung)",
-          publisher: "로크미디어 / 네이버 시리즈",
-          platform: "네이버 시리즈 & 카카오페이지",
-          status: "완결 (본편 354화)",
-          synopsis: "마교의 천옥을 훔쳐 먹고 절벽에서 떨어진 광마 이자하가 과거 점소이 시절로 회귀했다! 미치광이의 신념으로 강호를 발칵 뒤집는 본격 광기 폭발 무협소설.",
-          searchUrl: "https://series.naver.com/novel/detail.series?productNo=5573177",
-          ridiUrl: "https://ridibooks.com/books/297034731"
-        }
+        defaultReason: "초반의 외모 메시지부터 후반부 4대 크루 액션물의 도파민 폭발.",
+        novelTitle: "외모지상주의 (오리지널 웹툰)",
+        novelAuthor: "박태준",
+        novelPlatform: "네이버 웹툰",
+        novelUrl: "https://comic.naver.com/webtoon/list?titleId=641253",
+        novelChapters: "연재 중",
+        novelSynopsis: "누구나 부러워할 만큼 잘생긴 외모와 완벽한 몸을 갖게 된 왕따 소년의 이중 생활.",
+        novelCategory: "학원 액션 / 느와르"
       }
     };
 
@@ -493,10 +428,7 @@
       }
       const absHash = Math.abs(hash);
 
-      const genres = [
-        "어반 판타지 액션", "다크 아포칼립스", "퓨전 무협 판타지", 
-        "사이버펑크 레이드", "차원 침공 / 헌터물", "초능력 이능 배틀", "환생 복수극"
-      ];
+      const genres = ["어반 판타지 액션", "다크 아포칼립스", "퓨전 무협 판타지", "사이버펑크 레이드", "차원 침공 / 헌터물", "환생 복수극"];
       const roles = ["주인공 / 각성자", "세계선 수호자", "그림자 암살자", "원탑 능력자", "최연소 절대자"];
       const tiers = ["S+", "SS", "SS+", "SSS", "EX (규격 외)"];
       
@@ -511,50 +443,39 @@
       const mana = 60 + ((absHash >> 3) % 39);
       const intel = 75 + ((absHash >> 4) % 24);
 
-      const colors = [
-        "from-purple-900 to-slate-950",
-        "from-rose-900 to-slate-950",
-        "from-blue-900 to-slate-950",
-        "from-amber-900 to-slate-950",
-        "from-emerald-900 to-slate-950",
-        "from-indigo-900 to-slate-950"
-      ];
-      const badgeColors = [
-        "bg-purple-600", "bg-rose-600", "bg-blue-600", 
-        "bg-amber-600", "bg-emerald-600", "bg-indigo-600"
-      ];
+      const colors = ["from-purple-900 to-slate-950", "from-rose-900 to-slate-950", "from-blue-900 to-slate-950", "from-amber-900 to-slate-950", "from-emerald-900 to-slate-950"];
+      const badgeColors = ["bg-purple-600", "bg-rose-600", "bg-blue-600", "bg-amber-600", "bg-emerald-600"];
 
       return {
         genre: selectedGenre,
-        worldSetting: `[${title}]의 고유한 법칙이 지배하는 세계. 예측할 수 없는 위기와 세력 간의 충돌 속에서 숨겨진 시스템과 고대의 힘이 각성하여 전장을 뒤흔드는 무대.`,
+        worldSetting: `[${title}]의 고유한 법칙이 지배하는 세계. 예측할 수 없는 위기와 세력 간의 충돌 무대.`,
         characterName: `${title}의 핵심 주역`,
         characterRole: selectedRole,
         combatPower: basePower,
         combatTier: `${selectedTier} (측정 불가 전투력)`,
         stats: { attack: atk, defense: def, speed: spd, mana: mana, intellect: intel },
-        background: `오랜 시련과 각성의 계기를 거쳐 한계를 돌파한 인물. 독보적인 기술 체계와 전략적인 판단력으로 전세를 단숨에 뒤집는 결정적 전투력을 보유하고 있음.`,
+        background: `한계를 돌파하여 전세를 단숨에 뒤집는 결정적 전투력을 보유한 인물.`,
         themeColor: colors[absHash % colors.length],
         badgeColor: badgeColors[absHash % badgeColors.length],
-        defaultReason: `스토리 전개의 신선함과 주인공의 폭발적인 성장 및 카타르시스가 인상 깊어 추천 목록에 올림!`,
-        novelInfo: {
-          author: "원작 작가미상",
-          publisher: "대중 출판사",
-          platform: "네이버 시리즈 / 카카오페이지 검색",
-          status: "연재중 / 완결",
-          synopsis: `웹툰 [${title}]의 원작이 되는 동명의 인기 웹소설. 웹툰에서 다 담아내지 못한 방대한 설정과 심리 묘사, 세밀한 세계관을 생생하게 감상할 수 있습니다.`,
-          searchUrl: `https://series.naver.com/search/search.series?t=all&q=${encodeURIComponent(title)}`,
-          ridiUrl: `https://ridibooks.com/search?q=${encodeURIComponent(title)}`
-        }
+        defaultReason: `스토리 전개의 신선함과 주인공의 폭발적인 성장이 인상 깊어 아카이브에 등록함!`,
+        novelTitle: `${title} (원작 소설)`,
+        novelAuthor: "인기 작가",
+        novelPlatform: "네이버 시리즈 / 카카오페이지",
+        novelUrl: "https://series.naver.com",
+        novelChapters: "연재 중 / 완결",
+        novelSynopsis: `${title}의 원작 소설로 웹툰에서 다뤄지지 않은 섬세한 심리 묘사와 방대한 세계관 설정이 담겨 있습니다.`,
+        novelCategory: "판타지 / 기타"
       };
     }
 
     function App() {
-      // 탭 상태: 'webtoon' (TOP 5 웹툰) 또는 'novel' (원작 소설 아카이브)
-      const [currentTab, setCurrentTab] = useState('webtoon');
+      const [activeTab, setActiveTab] = useState('webtoon');
+      // 소장 페이지 내 카테고리별 필터 상태 ('ALL' 혹은 특정 카테고리 이름)
+      const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('ALL');
 
       const [webtoons, setWebtoons] = useState(() => {
         try {
-          const saved = localStorage.getItem('my_top5_webtoons');
+          const saved = localStorage.getItem('my_webtoon_novel_archive_v3');
           if (saved) return JSON.parse(saved);
         } catch (e) {
           console.error(e);
@@ -563,14 +484,247 @@
           const preset = PRESET_WEBTOONS[title];
           return {
             id: `wt-${Date.now()}-${idx}`,
-            rank: idx + 1,
             title: title,
             reason: preset.defaultReason,
+            updatedAt: Date.now() - idx * 10000,
             ...preset
           };
         });
         return defaults;
       });
+
+      const [folderNames, setFolderNames] = useState(() => {
+        try { return JSON.parse(localStorage.getItem('my_webtoon_archive_folders_v1') || '[]'); }
+        catch (e) { return []; }
+      });
+      const [expandedWebtoonIds, setExpandedWebtoonIds] = useState([]);
+      const [selectedWebtoonFolder, setSelectedWebtoonFolder] = useState('ALL');
+      const [webtoonFolderNames, setWebtoonFolderNames] = useState(() => {
+        try { return JSON.parse(localStorage.getItem('my_webtoon_collection_folders_v1') || '[]'); }
+        catch (e) { return []; }
+      });
+
+      // 웹툰과 분리된 독립 소설 서재
+      const [novels, setNovels] = useState(() => {
+        try {
+          const savedNovels = localStorage.getItem('my_novel_archive_v1');
+          if (savedNovels !== null) return JSON.parse(savedNovels);
+          // 이전 버전의 웹툰 카드에 저장된 원작 소설 정보를 독립 소설 서재로 1회 이전
+          const oldItems = JSON.parse(localStorage.getItem('my_webtoon_novel_archive_v3') || '[]');
+          return oldItems.filter(w => w.novelTitle && !/오리지널 웹툰|웹툰 원작|연재처/.test(w.novelTitle) && !/네이버 웹툰/.test(w.novelPlatform || ''))
+            .map((w, i) => ({
+              id: `nov-migrated-${w.id || i}`, title: w.novelTitle.replace(/ \(원작 소설\)$/, ''),
+              author: w.novelAuthor || '', platform: w.novelPlatform || '', url: w.novelUrl || '',
+              synopsis: w.novelSynopsis || '', folder: w.novelCategory || '미분류',
+              addedAt: w.updatedAt || Date.now() + i, lastChapterAt: null, top10Rank: null
+            }));
+        } catch (e) { console.error(e); return []; }
+      });
+      const [novelFolderNames, setNovelFolderNames] = useState(() => {
+        try { return JSON.parse(localStorage.getItem('my_novel_collection_folders_v1') || '[]'); }
+        catch (e) { return []; }
+      });
+      const [selectedNovelFolder, setSelectedNovelFolder] = useState('ALL');
+      const [novelTitleInput, setNovelTitleInput] = useState('');
+      const [novelAuthorInput, setNovelAuthorInput] = useState('');
+      const [novelPlatformInput, setNovelPlatformInput] = useState('');
+      const [novelUrlInput, setNovelUrlInput] = useState('');
+      const [novelSynopsisInput, setNovelSynopsisInput] = useState('');
+
+      useEffect(() => {
+        try { localStorage.setItem('my_webtoon_collection_folders_v1', JSON.stringify(webtoonFolderNames)); }
+        catch (e) { console.error(e); }
+      }, [webtoonFolderNames]);
+
+      useEffect(() => {
+        try { localStorage.setItem('my_novel_archive_v1', JSON.stringify(novels)); }
+        catch (e) { console.error(e); }
+      }, [novels]);
+      useEffect(() => {
+        try { localStorage.setItem('my_novel_collection_folders_v1', JSON.stringify(novelFolderNames)); }
+        catch (e) { console.error(e); }
+      }, [novelFolderNames]);
+
+      const handleCreateNovelFolder = () => {
+        const name = window.prompt('새 소설 소장 폴더 이름을 입력하세요. (예: 읽는 중, 완결작, 재독 예정)');
+        if (name === null) return;
+        const trimmed = name.trim();
+        if (!trimmed) { showToast('폴더 이름을 입력해 주세요.'); return; }
+        if (novelFolderNames.some(folder => folder.toLowerCase() === trimmed.toLowerCase())) {
+          showToast('같은 이름의 소설 폴더가 이미 있습니다.'); return;
+        }
+        setNovelFolderNames(current => [...current, trimmed]);
+        setSelectedNovelFolder(trimmed);
+        showToast(`'${trimmed}' 소설 폴더를 만들었습니다.`);
+      };
+
+      const handleAddNovel = (e) => {
+        e.preventDefault();
+        const title = novelTitleInput.trim();
+        if (!title) { showToast('소설 제목을 입력해 주세요.'); return; }
+        if (novels.some(n => n.title.toLowerCase() === title.toLowerCase())) {
+          showToast('이미 소설 서재에 등록된 작품입니다.'); return;
+        }
+        const item = {
+          id: `nov-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+          title, author: novelAuthorInput.trim(), platform: novelPlatformInput.trim(),
+          url: novelUrlInput.trim(), synopsis: novelSynopsisInput.trim(),
+          folder: '미분류', addedAt: Date.now(), lastChapterAt: null, top10Rank: null
+        };
+        setNovels(current => [...current, item]);
+        setNovelTitleInput(''); setNovelAuthorInput(''); setNovelPlatformInput(''); setNovelUrlInput(''); setNovelSynopsisInput('');
+        showToast(`'${title}'을(를) 소설 서재에 추가했습니다.`);
+      };
+
+      const normalizeNovelTitle = (value) => (value || '').replace(/ \(원작 소설\)$/, '').trim().toLocaleLowerCase();
+      const hasOriginalNovel = (item) => Boolean(
+        item?.novelTitle && item?.novelUrl &&
+        !/오리지널 웹툰|웹툰 원작|연재처/.test(item.novelTitle) &&
+        !/네이버 웹툰|카카오웹툰|레진코믹스/.test(item.novelPlatform || '') &&
+        item.novelAuthor !== '인기 작가' && item.novelUrl !== 'https://series.naver.com'
+      );
+      const isOriginalNovelInLibrary = (item) => novels.some(n => normalizeNovelTitle(n.title) === normalizeNovelTitle(item?.novelTitle));
+      const handleAddOriginalNovelToLibrary = (item) => {
+        if (!hasOriginalNovel(item)) {
+          showToast('이 웹툰에는 등록 가능한 원작 소설 정보가 없습니다. 먼저 작품 정보를 확인해 주세요.');
+          return;
+        }
+        if (isOriginalNovelInLibrary(item)) {
+          showToast(`'${item.novelTitle.replace(/ \(원작 소설\)$/, '')}'은(는) 이미 소설 서재에 등록되어 있습니다.`);
+          setActiveTab('novel');
+          return;
+        }
+        const title = item.novelTitle.replace(/ \(원작 소설\)$/, '').trim();
+        const novel = {
+          id: `nov-from-${item.id}-${Date.now()}`,
+          title,
+          author: item.novelAuthor || '',
+          platform: item.novelPlatform || '',
+          url: item.novelUrl || '',
+          synopsis: item.novelSynopsis || '',
+          folder: novelFolderNames.includes(item.novelCategory) ? item.novelCategory : '미분류',
+          addedAt: Date.now(),
+          lastChapterAt: null,
+          top10Rank: null,
+          sourceWebtoonId: item.id
+        };
+        setNovels(current => [...current, novel]);
+        setActiveTab('novel');
+        setSelectedNovelFolder('ALL');
+        showToast(`'${title}'을(를) 소설 서재에 추가했습니다.`);
+      };
+
+      const handleNovelUpdate = (id) => {
+        const target = novels.find(n => n.id === id);
+        setNovels(current => current.map(n => n.id === id ? { ...n, lastChapterAt: Date.now() } : n));
+        showToast(`'${target?.title}' 최신화 날짜를 기록했습니다. 목록 순서는 유지됩니다.`);
+      };
+      const handleNovelDelete = (id) => {
+        setNovels(current => current.filter(n => n.id !== id));
+        showToast('소설 서재에서 작품을 제거했습니다.');
+      };
+      const handleNovelEdit = (item) => {
+        const title = window.prompt('소설 제목', item.title);
+        if (title === null) return;
+        const author = window.prompt('작가', item.author || '');
+        if (author === null) return;
+        const platform = window.prompt('연재 플랫폼', item.platform || '');
+        if (platform === null) return;
+        const url = window.prompt('작품 URL', item.url || '');
+        if (url === null) return;
+        const synopsis = window.prompt('작품 소개 / 시놉시스', item.synopsis || '');
+        if (synopsis === null) return;
+        setNovels(current => current.map(n => n.id === item.id ? { ...n, title: title.trim() || item.title, author: author.trim(), platform: platform.trim(), url: url.trim(), synopsis: synopsis.trim() } : n));
+        showToast('소설 정보가 수정되었습니다.');
+      };
+      const handleToggleNovelTop10 = (id) => {
+        const target = novels.find(n => n.id === id);
+        if (!target) return;
+        if (target.top10Rank) {
+          const remaining = novels.filter(n => n.id !== id && Number.isInteger(n.top10Rank) && n.top10Rank >= 1 && n.top10Rank <= 10).sort((a,b) => a.top10Rank-b.top10Rank);
+          const rankMap = new Map(remaining.map((n, i) => [n.id, i+1]));
+          setNovels(current => current.map(n => n.id === id ? { ...n, top10Rank: null } : rankMap.has(n.id) ? { ...n, top10Rank: rankMap.get(n.id) } : n));
+          showToast(`'${target.title}'을(를) 소설 TOP 10에서 제외했습니다.`); return;
+        }
+        const ranked = novels.filter(n => Number.isInteger(n.top10Rank) && n.top10Rank >= 1 && n.top10Rank <= 10);
+        if (ranked.length >= 10) { showToast('소설 TOP 10은 최대 10개까지 등록할 수 있습니다.'); return; }
+        const used = new Set(ranked.map(n => n.top10Rank)); let rank = 1; while (used.has(rank) && rank <= 10) rank++;
+        setNovels(current => current.map(n => n.id === id ? { ...n, top10Rank: rank } : n));
+        showToast(`'${target.title}'을(를) 소설 TOP 10 ${rank}위에 추가했습니다.`);
+      };
+      const moveNovelTop10 = (id, direction) => {
+        const ranked = novels.filter(n => Number.isInteger(n.top10Rank) && n.top10Rank >= 1 && n.top10Rank <= 10).sort((a,b) => a.top10Rank-b.top10Rank);
+        const index = ranked.findIndex(n => n.id === id), swapIndex = index + direction;
+        if (index < 0 || swapIndex < 0 || swapIndex >= ranked.length) return;
+        const a = ranked[index].top10Rank, b = ranked[swapIndex].top10Rank;
+        setNovels(current => current.map(n => n.id === id ? { ...n, top10Rank: b } : n.id === ranked[swapIndex].id ? { ...n, top10Rank: a } : n));
+      };
+
+      const handleCreateWebtoonFolder = () => {
+        const name = window.prompt('새 웹툰 소장 폴더 이름을 입력하세요. (예: 보는 중, 완결작, 재독 예정)');
+        if (name === null) return;
+        const trimmed = name.trim();
+        if (!trimmed) { showToast('폴더 이름을 입력해 주세요.'); return; }
+        if (webtoonFolderNames.some(folder => folder.toLowerCase() === trimmed.toLowerCase())) {
+          showToast('같은 이름의 웹툰 폴더가 이미 있습니다.');
+          return;
+        }
+        setWebtoonFolderNames(current => [...current, trimmed]);
+        setSelectedWebtoonFolder(trimmed);
+        showToast(`'${trimmed}' 웹툰 소장 폴더를 만들었습니다. 작품 수정에서 폴더를 지정하세요.`);
+      };
+
+      const handleToggleTop10 = (id) => {
+        const target = webtoons.find(w => w.id === id);
+        if (!target) return;
+        if (target.top10Rank) {
+          const remaining = webtoons
+            .filter(w => w.id !== id && Number.isInteger(w.top10Rank) && w.top10Rank >= 1 && w.top10Rank <= 10)
+            .sort((a, b) => a.top10Rank - b.top10Rank);
+          const rankMap = new Map(remaining.map((w, index) => [w.id, index + 1]));
+          setWebtoons(current => current.map(w => w.id === id
+            ? { ...w, top10Rank: null }
+            : rankMap.has(w.id) ? { ...w, top10Rank: rankMap.get(w.id) } : w));
+          showToast(`'${target.title}'을(를) 개인 TOP 10에서 제외했습니다.`);
+          return;
+        }
+        const ranked = webtoons.filter(w => Number.isInteger(w.top10Rank) && w.top10Rank >= 1 && w.top10Rank <= 10);
+        if (ranked.length >= 10) { showToast('TOP 10은 최대 10개까지 등록할 수 있습니다. 먼저 한 작품을 제외해 주세요.'); return; }
+        const used = new Set(ranked.map(w => w.top10Rank));
+        let nextRank = 1;
+        while (used.has(nextRank) && nextRank <= 10) nextRank++;
+        setWebtoons(current => current.map(w => w.id === id ? { ...w, top10Rank: nextRank } : w));
+        showToast(`'${target.title}'을(를) 개인 TOP 10 ${nextRank}위에 추가했습니다.`);
+      };
+
+      const moveTop10 = (id, direction) => {
+        const ranked = webtoons.filter(w => Number.isInteger(w.top10Rank) && w.top10Rank >= 1 && w.top10Rank <= 10).sort((a,b) => a.top10Rank-b.top10Rank);
+        const index = ranked.findIndex(w => w.id === id);
+        const swapIndex = index + direction;
+        if (index < 0 || swapIndex < 0 || swapIndex >= ranked.length) return;
+        const currentRank = ranked[index].top10Rank;
+        const swapRank = ranked[swapIndex].top10Rank;
+        setWebtoons(current => current.map(w => w.id === id ? { ...w, top10Rank: swapRank } : w.id === ranked[swapIndex].id ? { ...w, top10Rank: currentRank } : w));
+      };
+
+      useEffect(() => {
+        try { localStorage.setItem('my_webtoon_archive_folders_v1', JSON.stringify(folderNames)); }
+        catch (e) { console.error(e); }
+      }, [folderNames]);
+
+      const handleCreateFolder = () => {
+        const name = window.prompt('새 소장 폴더 이름을 입력하세요. (예: 완결작, 무협, 다시 읽을 작품)');
+        if (name === null) return;
+        const trimmed = name.trim();
+        if (!trimmed) { showToast('폴더 이름을 입력해 주세요.'); return; }
+        if (folderNames.some(folder => folder.toLowerCase() === trimmed.toLowerCase())) {
+          showToast('같은 이름의 폴더가 이미 있습니다.');
+          return;
+        }
+        setFolderNames(current => [...current, trimmed]);
+        setSelectedCategoryFilter(trimmed);
+        showToast(`'${trimmed}' 폴더를 만들었습니다. 작품 수정에서 폴더를 지정할 수 있습니다.`);
+      };
 
       const [searchTitle, setSearchTitle] = useState('');
       const [selectedPresetKey, setSelectedPresetKey] = useState('');
@@ -579,12 +733,9 @@
       const [editForm, setEditForm] = useState(null);
       const [toastMessage, setToastMessage] = useState(null);
 
-      // 소설 페이지 전용 검색어
-      const [novelSearchQuery, setNovelSearchQuery] = useState('');
-
       useEffect(() => {
         try {
-          localStorage.setItem('my_top5_webtoons', JSON.stringify(webtoons));
+          localStorage.setItem('my_webtoon_novel_archive_v3', JSON.stringify(webtoons));
         } catch (e) {
           console.error(e);
         }
@@ -605,13 +756,8 @@
           return;
         }
 
-        if (webtoons.length >= 5) {
-          showToast("인생 웹툰은 최대 Top 5까지만 등록할 수 있습니다. 기존 항목을 교체해 주세요!");
-          return;
-        }
-
         if (webtoons.some(w => w.title.toLowerCase() === title.toLowerCase())) {
-          showToast("이미 순위에 등록된 웹툰입니다!");
+          showToast("이미 소장 목록에 등록된 작품입니다. 최신화 반영은 목록 순서를 바꾸지 않습니다.");
           return;
         }
 
@@ -622,9 +768,12 @@
 
         const newItem = {
           id: `wt-${Date.now()}`,
-          rank: webtoons.length + 1,
           title: title,
           reason: userReasonInput.trim() || baseData.defaultReason,
+          updatedAt: Date.now(),
+          lastChapterAt: null,
+          top10Rank: null,
+          webtoonFolder: '미분류',
           ...baseData
         };
 
@@ -632,49 +781,35 @@
         setSearchTitle('');
         setSelectedPresetKey('');
         setUserReasonInput('');
-        showToast(`'${title}'이(가) Top ${webtoons.length + 1}에 추가되었습니다!`);
+        showToast(`'${title}'이(가) 소장 목록 맨 아래에 추가되었습니다!`);
       };
 
-      const moveRank = (index, direction) => {
-        const targetIndex = index + direction;
-        if (targetIndex < 0 || targetIndex >= webtoons.length) return;
-
-        const updated = [...webtoons];
-        const temp = updated[index];
-        updated[index] = updated[targetIndex];
-        updated[targetIndex] = temp;
-
-        const reordered = updated.map((item, idx) => ({
-          ...item,
-          rank: idx + 1
-        }));
-
-        setWebtoons(reordered);
-        showToast(`순위가 변경되었습니다.`);
+      const handleTriggerUpdate = (id) => {
+        const now = Date.now();
+        const target = webtoons.find(w => w.id === id);
+        setWebtoons(current => current.map(w => w.id === id ? { ...w, lastChapterAt: now } : w));
+        showToast(`✨ '${target?.title}' 최신화 날짜를 기록했습니다. 목록 순서는 유지됩니다.`);
       };
 
       const handleDelete = (id) => {
         const filtered = webtoons.filter(w => w.id !== id);
-        const reordered = filtered.map((item, idx) => ({
-          ...item,
-          rank: idx + 1
-        }));
-        setWebtoons(reordered);
-        showToast("웹툰이 목록에서 제거되었습니다.");
+        setWebtoons(filtered);
+        showToast("목록에서 제거되었습니다.");
       };
 
       const handleOpenEdit = (item) => {
         setEditingItem(item);
-        setEditForm({ ...item, stats: { ...item.stats }, novelInfo: { ...item.novelInfo } });
+        setEditForm({ ...item, stats: { ...item.stats } });
       };
 
       const handleSaveEdit = () => {
         if (!editForm) return;
-        const updated = webtoons.map(w => (w.id === editForm.id ? editForm : w));
-        setWebtoons(updated);
+        const updatedItem = { ...editForm };
+        const updatedList = webtoons.map(w => (w.id === editForm.id ? updatedItem : w));
+        setWebtoons(updatedList);
         setEditingItem(null);
         setEditForm(null);
-        showToast("웹툰 및 원작 소설 정보가 성공적으로 수정되었습니다.");
+        showToast("작품 정보가 수정되었습니다. 목록 순서는 유지됩니다.");
       };
 
       const handleSelectPreset = (key) => {
@@ -686,14 +821,17 @@
       };
 
       const handleResetDefaults = () => {
-        if (confirm("목록을 기본 Top 3 웹툰으로 초기화하시겠습니까?")) {
+        if (confirm("목록을 기본 웹툰들로 초기화하시겠습니까?")) {
           const defaults = ["나 혼자만 레벨업", "전지적 독자 시점", "화산귀환"].map((title, idx) => {
             const preset = PRESET_WEBTOONS[title];
             return {
               id: `wt-${Date.now()}-${idx}`,
-              rank: idx + 1,
               title: title,
               reason: preset.defaultReason,
+              updatedAt: Date.now() - idx * 10000,
+              lastChapterAt: null,
+              top10Rank: null,
+              webtoonFolder: '미분류',
               ...preset
             };
           });
@@ -703,13 +841,17 @@
       };
 
       const handleShare = async () => {
-        const summary = webtoons.map(w => `${w.rank}위: ${w.title} (${w.genre}) - CP: ${w.combatPower.toLocaleString()} CP\n원작 소설: ${w.novelInfo?.platform || '플랫폼 연동'}`).join('\n\n');
-        const textToCopy = `🏆 [내 인생 웹툰 & 원작 소설 연구소] 🏆\n\n${summary}\n\n#인생웹툰 #웹소설 #원작소설추천`;
+        const summary = `웹툰\n${webtoons.map((w, idx) => `${idx + 1}. ${w.title} [폴더: ${w.webtoonFolder || '미분류'}]\n추천 이유: ${w.reason}`).join('\n\n')}\n\n소설\n${novels.map((n, idx) => `${idx + 1}. ${n.title} [폴더: ${n.folder || '미분류'}]\n작가: ${n.author || '미입력'}`).join('\n\n')}`;
+        const textToCopy = `📚 [웹툰·소설 아카이브] 📚
+
+${summary}
+
+#웹툰 #소설 #개인아카이브`;
         
         if (navigator.share) {
           try {
             await navigator.share({
-              title: '내 인생 웹툰 & 원작 소설 연구소',
+              title: '웹툰·소설 아카이브',
               text: textToCopy
             });
             return;
@@ -720,91 +862,49 @@
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(textToCopy).then(() => {
-            showToast("정보가 클립보드에 복사되었습니다!");
+            showToast("목록 정보가 클립보드에 복사되었습니다!");
           }).catch(() => {
-            fallbackCopyText(textToCopy);
+            showToast("복사에 실패했습니다.");
           });
         } else {
-          fallbackCopyText(textToCopy);
-        }
-      };
-
-      const fallbackCopyText = (text) => {
-        try {
-          const textArea = document.createElement("textarea");
-          textArea.value = text;
-          textArea.style.position = "fixed";
-          textArea.style.opacity = "0";
-          document.body.appendChild(textArea);
-          textArea.focus();
-          textArea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textArea);
-          showToast("정보가 클립보드에 복사되었습니다!");
-        } catch (err) {
           showToast("복사에 실패했습니다.");
         }
       };
 
-      // 소설 페이지에서 보여줄 전체 소설 목록 (현재 등록된 웹툰들의 원작 소설 + 프리셋 전체)
-      const allPresetNovels = Object.entries(PRESET_WEBTOONS).map(([title, data]) => ({
-        title: title,
-        ...data.novelInfo,
-        genre: data.genre,
-        badgeColor: data.badgeColor
-      }));
+      const sortedWebtoons = [...webtoons].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+      // 웹툰 소장 페이지는 배열 순서를 그대로 유지해 최신화 버튼을 눌러도 위치가 바뀌지 않음
+      const orderedWebtoons = [...webtoons];
+      const webtoonFolders = Array.from(new Set([...webtoonFolderNames, ...webtoons.map(w => (w.webtoonFolder || '미분류').trim()).filter(Boolean)]));
+      const visibleWebtoons = orderedWebtoons.filter(w => selectedWebtoonFolder === 'ALL' || (w.webtoonFolder || '미분류') === selectedWebtoonFolder);
+      const top10Webtoons = webtoons.filter(w => Number.isInteger(w.top10Rank) && w.top10Rank >= 1 && w.top10Rank <= 10).sort((a,b) => a.top10Rank-b.top10Rank);
 
-      // 사용자가 등록한 웹툰의 원작 소설들도 포함
-      const registeredNovelsMap = new Map();
-      webtoons.forEach(w => {
-        if (w.novelInfo) {
-          registeredNovelsMap.set(w.title, {
-            title: w.title,
-            ...w.novelInfo,
-            genre: w.genre,
-            badgeColor: w.badgeColor
-          });
-        }
-      });
-
-      allPresetNovels.forEach(n => {
-        if (!registeredNovelsMap.has(n.title)) {
-          registeredNovelsMap.set(n.title, n);
-        }
-      });
-
-      const uniqueNovelsList = Array.from(registeredNovelsMap.values());
-      const filteredNovels = uniqueNovelsList.filter(n => 
-        n.title.toLowerCase().includes(novelSearchQuery.toLowerCase()) ||
-        n.author.toLowerCase().includes(novelSearchQuery.toLowerCase()) ||
-        n.platform.toLowerCase().includes(novelSearchQuery.toLowerCase()) ||
-        n.synopsis.toLowerCase().includes(novelSearchQuery.toLowerCase())
-      );
+      const novelFolders = Array.from(new Set([...novelFolderNames, ...novels.map(n => (n.folder || '미분류').trim()).filter(Boolean)]));
+      const visibleNovels = novels.filter(n => selectedNovelFolder === 'ALL' || (n.folder || '미분류') === selectedNovelFolder);
+      const top10Novels = novels.filter(n => Number.isInteger(n.top10Rank) && n.top10Rank >= 1 && n.top10Rank <= 10).sort((a,b) => a.top10Rank-b.top10Rank);
 
       return (
         <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans pb-16 selection:bg-purple-600 selection:text-white">
-          {/* 토스트 알림창 */}
           {toastMessage && (
-            <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm bg-neutral-900/95 border border-purple-500/60 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 backdrop-blur-md">
+            <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm bg-neutral-900/95 border border-purple-500/60 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 backdrop-blur-md">
               <Sparkles className="w-5 h-5 text-purple-400 shrink-0" />
               <span className="text-xs sm:text-sm font-semibold">{toastMessage}</span>
             </div>
           )}
 
-          {/* 헤더 섹션 (iOS 상단 노치 대응) */}
-          <header className="border-b border-neutral-800 bg-neutral-900/90 backdrop-blur-md sticky top-0 z-30 ios-safe-header">
+          {/* 헤더 섹션 */}
+          <header className="border-b border-neutral-800 bg-neutral-900/80 backdrop-blur-md sticky top-0 z-30 ios-safe-header">
             <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-gradient-to-tr from-purple-600 to-indigo-600 rounded-xl shadow-lg shadow-purple-900/30">
-                    <Trophy className="w-5 h-5 text-white" />
+                    <BookOpen className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-base sm:text-lg font-bold tracking-tight bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
-                      웹툰 & 원작 소설 연구소
+                    <h1 className="text-lg sm:text-xl font-bold tracking-tight bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+                      웹툰·소설 아카이브
                     </h1>
                     <p className="text-[11px] text-neutral-400">
-                      인생 웹툰 TOP 5 및 원작 소설 아카이빙
+                      웹툰과 소설을 독립적으로 관리하는 개인 아카이브
                     </p>
                   </div>
                 </div>
@@ -812,13 +912,13 @@
               
               <div className="flex items-center justify-between sm:justify-end space-x-2 w-full sm:w-auto">
                 <div className="flex items-center space-x-1.5 text-xs bg-neutral-800/80 px-3 py-1.5 rounded-full border border-neutral-700">
-                  <span className="text-neutral-400">TOP 5 등록:</span>
-                  <span className="font-bold text-purple-400">{webtoons.length} / 5</span>
+                  <span className="text-neutral-400">등록 작품:</span>
+                  <span className="font-bold text-purple-400">{webtoons.length + novels.length}개</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={handleShare}
-                    title="연구소 정보 공유하기"
+                    title="아카이브 공유하기"
                     className="flex items-center space-x-1.5 text-xs bg-neutral-800 active:bg-neutral-700 text-neutral-200 px-3.5 py-1.5 rounded-full border border-neutral-700 transition"
                   >
                     <Share2 className="w-3.5 h-3.5 text-indigo-400" />
@@ -835,51 +935,68 @@
               </div>
             </div>
 
-            {/* 네비게이션 탭 (웹툰 TOP 5 vs 원작 소설 페이지) */}
-            <div className="max-w-6xl mx-auto px-4 flex space-x-2 pt-2 pb-2 border-t border-neutral-800/80">
+            {/* 메인 탭 네비게이션 */}
+            <div className="max-w-6xl mx-auto px-4 flex space-x-2 pt-2 pb-2 border-t border-neutral-800/60">
               <button
-                onClick={() => setCurrentTab('webtoon')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                  currentTab === 'webtoon'
-                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/40'
-                    : 'bg-neutral-800/60 text-neutral-400 hover:text-neutral-200 active:bg-neutral-800'
+                onClick={() => setActiveTab('webtoon')}
+                className={`flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition ${
+                  activeTab === 'webtoon'
+                    ? 'bg-purple-600 text-white shadow-md shadow-purple-900/40'
+                    : 'bg-neutral-900 text-neutral-400 active:bg-neutral-800 hover:text-white'
                 }`}
               >
-                <Trophy className="w-4 h-4" />
-                <span>인생 웹툰 TOP 5 ({webtoons.length})</span>
+                <Sparkles className="w-4 h-4" />
+                <span>웹툰 소장 ({webtoons.length})</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('top10')}
+                className={`flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition ${
+                  activeTab === 'top10'
+                    ? 'bg-amber-600 text-white shadow-md shadow-amber-900/40'
+                    : 'bg-neutral-900 text-neutral-400 active:bg-neutral-800 hover:text-white'
+                }`}
+              >
+                <Flame className="w-4 h-4" />
+                <span>개인 TOP 10 ({top10Webtoons.length}/10)</span>
               </button>
 
               <button
-                onClick={() => setCurrentTab('novel')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                  currentTab === 'novel'
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/40'
-                    : 'bg-neutral-800/60 text-neutral-400 hover:text-neutral-200 active:bg-neutral-800'
+                onClick={() => setActiveTab('novel')}
+                className={`flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition ${
+                  activeTab === 'novel' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/40' : 'bg-neutral-900 text-neutral-400 active:bg-neutral-800 hover:text-white'
                 }`}
               >
                 <BookOpen className="w-4 h-4" />
-                <span>원작 소설 아카이브 ({uniqueNovelsList.length})</span>
+                <span>소설 서재 ({novels.length})</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('novelTop10')}
+                className={`flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition ${
+                  activeTab === 'novelTop10' ? 'bg-amber-600 text-white shadow-md shadow-amber-900/40' : 'bg-neutral-900 text-neutral-400 active:bg-neutral-800 hover:text-white'
+                }`}
+              >
+                <Flame className="w-4 h-4" />
+                <span>소설 TOP 10 ({top10Novels.length}/10)</span>
               </button>
             </div>
           </header>
 
           <main className="max-w-6xl mx-auto px-4 pt-6">
-            {/* 탭 1: 인생 웹툰 TOP 5 페이지 */}
-            {currentTab === 'webtoon' && (
-              <div className="space-y-6">
-                {/* 등록 및 자동완성 폼 */}
-                <section className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-xl">
+            {/* 1. 웹툰 목록 탭 뷰 */}
+            {activeTab === 'webtoon' && (
+              <div>
+                <section className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 sm:p-6 mb-6 shadow-xl">
                   <div className="flex items-center space-x-2 mb-3">
                     <Sparkles className="w-5 h-5 text-purple-400 shrink-0" />
                     <h2 className="text-sm sm:text-base font-semibold text-neutral-200">
-                      웹툰 추가하기 (제목을 넣으면 원작 소설 및 전투력이 자동 매칭됩니다)
+                      웹툰 소장 목록에 작품 추가하기
                     </h2>
                   </div>
 
-                  {/* 인기 웹툰 빠른 선택 버튼 */}
                   <div className="mb-4">
                     <label className="text-xs text-neutral-400 block mb-2 font-medium">
-                      인기 추천 웹툰 빠른 터치:
+                      인기 추천 작품 빠른 선택:
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {Object.keys(PRESET_WEBTOONS).map((title) => (
@@ -908,8 +1025,8 @@
                             type="text"
                             value={searchTitle}
                             onChange={(e) => setSearchTitle(e.target.value)}
-                            placeholder="예: 화산귀환, 멸망한 세계..."
-                            className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3.5 py-2.5 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
+                            placeholder="예: 전지적 독자 시점..."
+                            className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3.5 py-2.5 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-purple-500"
                           />
                           <Search className="w-4 h-4 text-neutral-500 absolute right-3 top-3.5" />
                         </div>
@@ -917,272 +1034,92 @@
 
                       <div className="md:col-span-2">
                         <label className="text-xs text-neutral-400 block mb-1 font-medium">
-                          내가 이 웹툰에 입덕한 이유 / 추천 코멘트 (선택사항)
+                          추천 코멘트 / 입덕 이유 (선택사항)
                         </label>
                         <input
                           type="text"
                           value={userReasonInput}
                           onChange={(e) => setUserReasonInput(e.target.value)}
-                          placeholder="예: 압도적인 작화와 사이다 액션! (미입력 시 자동 생성)"
-                          className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3.5 py-2.5 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
+                          placeholder="예: 세계관 설정이 너무 탄탄하고 몰입감 최고!"
+                          className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3.5 py-2.5 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-purple-500"
                         />
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center pt-1">
-                      <span className="text-xs text-neutral-400">
-                        * 등록 시 원작 소설 링크와 작가 정보가 함께 아카이브됩니다.
-                      </span>
+                    <div className="flex justify-end pt-1">
                       <button
                         type="submit"
-                        disabled={webtoons.length >= 5}
-                        className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 active:from-purple-500 active:to-indigo-500 disabled:opacity-50 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-lg transition-all cursor-pointer disabled:cursor-not-allowed"
+                        className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 active:from-purple-500 active:to-indigo-500 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-lg transition-all cursor-pointer"
                       >
                         <Plus className="w-4 h-4" />
-                        <span>Top {webtoons.length < 5 ? webtoons.length + 1 : 5} 등록하기</span>
+                        <span>아카이브에 등록하기</span>
                       </button>
                     </div>
                   </form>
                 </section>
 
-                {/* 등록된 웹툰 목록 리스트 */}
+                <section className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-4 mb-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div>
+                      <h3 className="font-bold text-white text-sm">웹툰 소장 폴더</h3>
+                      <p className="text-xs text-neutral-400 mt-1">폴더를 만들어 작품을 분류하세요. 최신화 반영은 날짜만 기록하고 목록 위치는 바꾸지 않습니다.</p>
+                    </div>
+                    <button type="button" onClick={handleCreateWebtoonFolder} className="text-xs px-3.5 py-2 rounded-xl font-semibold bg-purple-600 hover:bg-purple-500 text-white flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> 폴더 만들기</button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[{name:'ALL',label:`전체 보기 (${webtoons.length})`}, ...webtoonFolders.map(folder => ({name:folder,label:`${folder} (${orderedWebtoons.filter(w => (w.webtoonFolder || '미분류') === folder).length})`}))].map(folder => (
+                      <button key={folder.name} type="button" onClick={() => setSelectedWebtoonFolder(folder.name)} className={`text-xs px-3 py-1.5 rounded-xl border ${selectedWebtoonFolder === folder.name ? 'bg-purple-600 text-white border-purple-500' : 'bg-neutral-950 text-neutral-300 border-neutral-700 hover:text-white'}`}>{folder.label}</button>
+                    ))}
+                  </div>
+                </section>
+
                 <div className="space-y-5">
-                  {webtoons.length === 0 ? (
+                  {visibleWebtoons.length === 0 ? (
                     <div className="text-center py-16 bg-neutral-900/40 border border-dashed border-neutral-800 rounded-2xl">
                       <BookOpen className="w-12 h-12 text-neutral-600 mx-auto mb-3" />
-                      <p className="text-neutral-400 text-sm">아직 등록된 웹툰이 없습니다.</p>
-                      <p className="text-neutral-500 text-xs mt-1">위의 폼에서 인생 웹툰을 등록해 보세요!</p>
+                      <p className="text-neutral-400 text-sm">등록된 작품이 없습니다.</p>
                     </div>
                   ) : (
-                    webtoons.map((item, index) => (
-                      <div 
-                        key={item.id}
-                        className="relative bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden transition-all shadow-xl"
-                      >
-                        <div className={`h-1.5 w-full bg-gradient-to-r ${item.themeColor || 'from-purple-600 to-indigo-600'}`} />
-                        
-                        <div className="p-4 sm:p-6">
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-neutral-800 pb-4 mb-4">
-                            <div className="flex items-center space-x-3">
-                              <div className={`flex items-center justify-center w-9 h-9 rounded-xl font-black text-sm text-white shadow-md shrink-0 ${
-                                item.rank === 1 ? 'bg-amber-500 ring-2 ring-amber-400/50' : 
-                                item.rank === 2 ? 'bg-slate-400' : 
-                                item.rank === 3 ? 'bg-amber-700' : 'bg-neutral-800 border border-neutral-700'
-                              }`}>
-                                #{item.rank}
+                    visibleWebtoons.map((item, index) => (
+                      <div key={item.id} className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-md">
+                        <div className={`h-1 w-full bg-gradient-to-r ${item.themeColor || 'from-purple-600 to-indigo-600'}`} />
+                        <div className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="flex items-center justify-center w-9 h-9 rounded-lg font-black text-sm bg-purple-950 text-purple-300 border border-purple-800 shrink-0">#{index + 1}</div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h3 className="font-bold text-white text-base sm:text-lg break-words">{item.title}</h3>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-purple-300 border border-purple-900/50">{item.genre || '장르 미입력'}</span>
                               </div>
-
-                              <div>
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-                                    {item.title}
-                                  </h3>
-                                  <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-neutral-800 text-purple-300 border border-purple-900/50">
-                                    {item.genre}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center space-x-1.5 self-end sm:self-auto">
-                              <button
-                                onClick={() => moveRank(index, -1)}
-                                disabled={index === 0}
-                                title="순위 올리기"
-                                className="p-2 text-neutral-400 active:text-white disabled:opacity-30 bg-neutral-800/60 rounded-lg transition"
-                              >
-                                <ArrowUp className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => moveRank(index, 1)}
-                                disabled={index === webtoons.length - 1}
-                                title="순위 내리기"
-                                className="p-2 text-neutral-400 active:text-white disabled:opacity-30 bg-neutral-800/60 rounded-lg transition"
-                              >
-                                <ArrowDown className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleOpenEdit(item)}
-                                title="정보 및 원작 소설 정보 수정"
-                                className="flex items-center space-x-1 text-xs px-3 py-2 bg-neutral-800 active:bg-neutral-700 text-neutral-200 rounded-lg border border-neutral-700 transition ml-1"
-                              >
-                                <Edit3 className="w-3.5 h-3.5 text-purple-400" />
-                                <span>수정</span>
-                              </button>
-                              <button
-                                onClick={() => handleDelete(item.id)}
-                                title="삭제"
-                                className="p-2 text-neutral-400 active:text-rose-400 bg-neutral-800/60 rounded-lg transition"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              <p className="text-xs text-neutral-500 mt-1">최신화 반영: {new Date(item.lastChapterAt || item.updatedAt || 0).toLocaleString('ko-KR')} · 소장 폴더: {item.webtoonFolder || '미분류'}</p>
+                              {item.reason && <p className="text-xs text-neutral-300 mt-1 line-clamp-2">{item.reason}</p>}
                             </div>
                           </div>
-
-                          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                            <div className="lg:col-span-7 space-y-3.5">
-                              <div className="bg-purple-950/20 border border-purple-900/30 rounded-xl p-3.5">
-                                <div className="flex items-center space-x-2 text-purple-400 text-xs font-bold mb-1.5 uppercase tracking-wider">
-                                  <Heart className="w-4 h-4 fill-purple-400/20 text-purple-400" />
-                                  <span>내가 이 웹툰에 입덕한 이유</span>
-                                </div>
-                                <p className="text-neutral-200 text-sm leading-relaxed whitespace-pre-wrap">
-                                  {item.reason}
-                                </p>
-                              </div>
-
-                              {/* 원작 소설 바로가기 카드 배너 */}
-                              {item.novelInfo && (
-                                <div className="bg-indigo-950/30 border border-indigo-900/40 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                                  <div className="space-y-1">
-                                    <div className="flex items-center space-x-1.5 text-indigo-300 text-xs font-bold">
-                                      <BookOpen className="w-4 h-4 text-indigo-400" />
-                                      <span>원작 소설: {item.novelInfo.platform}</span>
-                                    </div>
-                                    <p className="text-neutral-300 text-xs">
-                                      작가: <span className="text-neutral-100 font-medium">{item.novelInfo.author}</span> ({item.novelInfo.status})
-                                    </p>
-                                  </div>
-
-                                  <div className="flex items-center space-x-2 w-full sm:w-auto">
-                                    {item.novelInfo.searchUrl && (
-                                      <a
-                                        href={item.novelInfo.searchUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex-1 sm:flex-none flex items-center justify-center space-x-1 text-xs bg-indigo-600 active:bg-indigo-500 text-white px-3.5 py-2 rounded-lg font-semibold shadow-md transition"
-                                      >
-                                        <span>소설 보러가기</span>
-                                        <ExternalLink className="w-3.5 h-3.5" />
-                                      </a>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              <div>
-                                <div className="flex items-center space-x-1.5 text-neutral-400 text-xs font-semibold mb-1">
-                                  <BookOpen className="w-3.5 h-3.5 text-neutral-400" />
-                                  <span>세계관 설정</span>
-                                </div>
-                                <p className="text-neutral-300 text-xs sm:text-sm leading-relaxed bg-neutral-950/60 p-3 rounded-xl border border-neutral-800/80">
-                                  {item.worldSetting}
-                                </p>
-                              </div>
-
-                              <div>
-                                <div className="flex items-center space-x-1.5 text-neutral-400 text-xs font-semibold mb-1">
-                                  <Zap className="w-3.5 h-3.5 text-amber-400" />
-                                  <span>스토리 배경 & 핵심 서사</span>
-                                </div>
-                                <p className="text-neutral-400 text-xs leading-relaxed bg-neutral-950/40 p-3 rounded-xl border border-neutral-800/50">
-                                  {item.background}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="lg:col-span-5 bg-neutral-950/70 border border-neutral-800 rounded-xl p-4 flex flex-col justify-between">
-                              <div>
-                                <div className="flex items-center justify-between mb-3 border-b border-neutral-800/60 pb-2">
-                                  <div className="flex items-center space-x-2">
-                                    <Sword className="w-4 h-4 text-rose-500" />
-                                    <span className="text-xs font-bold text-neutral-300">대표 인물 & 전투력 분석</span>
-                                  </div>
-                                  <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-rose-950/50 text-rose-300 border border-rose-900/40">
-                                    {item.combatTier}
-                                  </span>
-                                </div>
-
-                                <div className="mb-4">
-                                  <div className="text-sm font-bold text-white flex items-center justify-between">
-                                    <span>{item.characterName}</span>
-                                    <span className="text-xs font-normal text-neutral-400">{item.characterRole}</span>
-                                  </div>
-                                  
-                                  <div className="mt-2 bg-neutral-900 p-2.5 rounded-lg border border-neutral-800">
-                                    <div className="flex justify-between items-center text-xs mb-1">
-                                      <span className="text-neutral-400 flex items-center gap-1">
-                                        <Flame className="w-3.5 h-3.5 text-amber-500" /> 종합 전투력 지수
-                                      </span>
-                                      <span className="font-mono font-bold text-amber-400 text-sm">
-                                        {item.combatPower.toLocaleString()} CP
-                                      </span>
-                                    </div>
-                                    <div className="w-full bg-neutral-800 h-2 rounded-full overflow-hidden">
-                                      <div 
-                                        className="bg-gradient-to-r from-amber-500 to-rose-500 h-full rounded-full transition-all duration-500" 
-                                        style={{ width: `${Math.min(100, Math.max(10, (item.combatPower / 100000) * 100))}%` }}
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="space-y-2 pt-1 text-xs">
-                                  <div>
-                                    <div className="flex justify-between text-[11px] text-neutral-400 mb-0.5">
-                                      <span>공격력 (ATK)</span>
-                                      <span className="font-mono text-neutral-200">{item.stats?.attack || 80}/100</span>
-                                    </div>
-                                    <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-                                      <div className="bg-rose-500 h-full" style={{ width: `${item.stats?.attack || 80}%` }} />
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <div className="flex justify-between text-[11px] text-neutral-400 mb-0.5">
-                                      <span>방어 / 생존 (DEF)</span>
-                                      <span className="font-mono text-neutral-200">{item.stats?.defense || 80}/100</span>
-                                    </div>
-                                    <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-                                      <div className="bg-blue-500 h-full" style={{ width: `${item.stats?.defense || 80}%` }} />
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <div className="flex justify-between text-[11px] text-neutral-400 mb-0.5">
-                                      <span>스피드 / 기동 (SPD)</span>
-                                      <span className="font-mono text-neutral-200">{item.stats?.speed || 80}/100</span>
-                                    </div>
-                                    <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-                                      <div className="bg-emerald-500 h-full" style={{ width: `${item.stats?.speed || 80}%` }} />
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <div className="flex justify-between text-[11px] text-neutral-400 mb-0.5">
-                                      <span>마력 / 신수 / 내공</span>
-                                      <span className="font-mono text-neutral-200">{item.stats?.mana || 80}/100</span>
-                                    </div>
-                                    <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-                                      <div className="bg-purple-500 h-full" style={{ width: `${item.stats?.mana || 80}%` }} />
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <div className="flex justify-between text-[11px] text-neutral-400 mb-0.5">
-                                      <span>지능 / 전술 (INT)</span>
-                                      <span className="font-mono text-neutral-200">{item.stats?.intellect || 80}/100</span>
-                                    </div>
-                                    <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-                                      <div className="bg-yellow-500 h-full" style={{ width: `${item.stats?.intellect || 80}%` }} />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center text-[11px] text-neutral-500">
-                                <span>전투 분석 완료</span>
-                                <button 
-                                  type="button"
-                                  className="text-purple-400 font-semibold active:underline cursor-pointer" 
-                                  onClick={() => handleOpenEdit(item)}
-                                >
-                                  스탯 및 소설 수정 →
-                                </button>
-                              </div>
-                            </div>
+                          <div className="flex flex-wrap items-center gap-2 sm:justify-end shrink-0">
+                            <button onClick={() => handleToggleTop10(item.id)} title={item.top10Rank ? "개인 TOP 10에서 제외" : "개인 TOP 10에 추가"} className={`flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-lg border ${item.top10Rank ? 'bg-amber-600/20 border-amber-500 text-amber-300' : 'bg-neutral-800 border-neutral-700 text-neutral-300'}`}><Flame className="w-3.5 h-3.5" /><span>{item.top10Rank ? `TOP ${item.top10Rank}` : "TOP10 추가"}</span></button>
+                            <button onClick={() => handleTriggerUpdate(item.id)} title="최신화 반영 날짜만 기록하고 목록 순서는 유지" className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold px-3 py-2 rounded-lg"><Bell className="w-3.5 h-3.5" /><span>최신화 반영</span></button>
+                            {hasOriginalNovel(item) && (
+                              <button
+                                onClick={() => handleAddOriginalNovelToLibrary(item)}
+                                title={isOriginalNovelInLibrary(item) ? "이미 소설 서재에 등록된 원작 소설" : "원작 소설을 소설 서재에 추가"}
+                                className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border ${isOriginalNovelInLibrary(item) ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-500'}`}
+                              >
+                                <BookOpen className="w-3.5 h-3.5" />
+                                <span>{isOriginalNovelInLibrary(item) ? '소설 서재 등록됨' : '원작 소설 → 서재 추가'}</span>
+                              </button>
+                            )}
+                            <button onClick={() => setExpandedWebtoonIds(current => current.includes(item.id) ? current.filter(id => id !== item.id) : [...current, item.id])} className="text-xs px-3 py-2 bg-neutral-800 text-neutral-200 rounded-lg border border-neutral-700">{expandedWebtoonIds.includes(item.id) ? '간략히' : '상세 보기'}</button>
+                            <button onClick={() => handleOpenEdit(item)} title="수정" className="flex items-center gap-1 text-xs px-3 py-2 bg-neutral-800 text-neutral-200 rounded-lg border border-neutral-700"><Edit3 className="w-3.5 h-3.5 text-purple-400" /><span>수정</span></button>
+                            <button onClick={() => handleDelete(item.id)} title="삭제" className="p-2 text-neutral-400 hover:text-rose-400 bg-neutral-800 rounded-lg border border-neutral-700"><Trash2 className="w-4 h-4" /></button>
                           </div>
                         </div>
+                        {expandedWebtoonIds.includes(item.id) && (
+                          <div className="px-4 pb-4 border-t border-neutral-800 pt-3 space-y-3">
+                            <div><p className="text-xs text-purple-300 font-bold mb-1">추천 코멘트</p><p className="text-sm text-neutral-200 whitespace-pre-wrap">{item.reason || '입력된 코멘트가 없습니다.'}</p></div>
+                            <div><p className="text-xs text-neutral-400 font-bold mb-1">세계관 설정</p><p className="text-sm text-neutral-300">{item.worldSetting || '설정 정보가 없습니다.'}</p></div>
+                            
+                          </div>
+                        )}
                       </div>
                     ))
                   )}
@@ -1190,107 +1127,115 @@
               </div>
             )}
 
-            {/* 탭 2: 원작 소설 아카이브 페이지 */}
-            {currentTab === 'novel' && (
-              <div className="space-y-6">
-                <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-xl">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                    <div>
-                      <h2 className="text-lg sm:text-xl font-bold text-white flex items-center space-x-2">
-                        <BookOpen className="w-5 h-5 text-indigo-400" />
-                        <span>인생 웹툰 원작 소설 도서관</span>
-                      </h2>
-                      <p className="text-xs sm:text-sm text-neutral-400 mt-1">
-                        웹툰의 깊은 여운을 원작 웹소설로 이어보세요. 네이버 시리즈, 카카오페이지, 리디북스 등 독점 연재 플랫폼 바로가기를 지원합니다.
-                      </p>
-                    </div>
-
-                    <div className="w-full sm:w-72 relative">
-                      <input
-                        type="text"
-                        value={novelSearchQuery}
-                        onChange={(e) => setNovelSearchQuery(e.target.value)}
-                        placeholder="소설 제목, 작가, 플랫폼 검색..."
-                        className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-indigo-500"
-                      />
-                      <Search className="w-4 h-4 text-neutral-500 absolute right-3 top-3" />
-                    </div>
+            {/* 개인별 TOP 10 페이지 */}
+            {activeTab === 'top10' && (
+              <div className="space-y-5">
+                <section className="bg-gradient-to-r from-amber-950/60 to-orange-950/40 border border-amber-900/50 rounded-2xl p-5 sm:p-6">
+                  <div className="flex items-center gap-3 mb-2"><Flame className="w-6 h-6 text-amber-400" /><h2 className="text-xl font-bold text-white">나만의 웹툰 TOP 10</h2></div>
+                  <p className="text-sm text-neutral-300">웹툰 소장 목록에서 TOP10 추가를 눌러 직접 선정하세요. 위·아래 버튼으로 개인 순위를 조정할 수 있습니다. 최대 10개까지 등록됩니다.</p>
+                </section>
+                {top10Webtoons.length === 0 ? (
+                  <div className="text-center py-14 bg-neutral-900/50 border border-dashed border-neutral-800 rounded-2xl"><Flame className="w-10 h-10 text-neutral-600 mx-auto mb-3" /><p className="text-neutral-300 font-semibold">아직 TOP 10 작품이 없습니다.</p><p className="text-xs text-neutral-500 mt-1">웹툰 소장 페이지에서 마음에 드는 작품을 추가해 주세요.</p><button onClick={() => setActiveTab('webtoon')} className="mt-4 px-4 py-2 rounded-xl bg-purple-600 text-white text-sm">웹툰 소장으로 이동</button></div>
+                ) : (
+                  <div className="space-y-3">
+                    {top10Webtoons.map((item, index) => (
+                      <div key={`top10-${item.id}`} className="flex items-center gap-3 p-4 rounded-xl border border-neutral-800 bg-neutral-900">
+                        <div className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-amber-950 border border-amber-700 text-amber-300 font-black">{item.top10Rank}</div>
+                        <div className="min-w-0 flex-1"><h3 className="font-bold text-white">{item.title}</h3><p className="text-xs text-neutral-400 mt-1">{item.genre || '장르 미입력'} · 소장 폴더: {item.webtoonFolder || '미분류'}</p>{item.reason && <p className="text-xs text-neutral-300 mt-1">{item.reason}</p>}</div>
+                        <div className="flex flex-col gap-1"><button disabled={index === 0} onClick={() => moveTop10(item.id, -1)} className="px-2 py-1 rounded bg-neutral-800 text-xs disabled:opacity-30" title="순위 올리기">▲</button><button disabled={index === top10Webtoons.length - 1} onClick={() => moveTop10(item.id, 1)} className="px-2 py-1 rounded bg-neutral-800 text-xs disabled:opacity-30" title="순위 내리기">▼</button><button onClick={() => handleToggleTop10(item.id)} className="px-2 py-1 rounded bg-rose-950 text-rose-300 text-xs">제외</button></div>
+                      </div>
+                    ))}
                   </div>
+                )}
+              </div>
+            )}
 
-                  {filteredNovels.length === 0 ? (
-                    <div className="text-center py-16 bg-neutral-950/50 rounded-xl border border-neutral-800">
-                      <FileText className="w-10 h-10 text-neutral-600 mx-auto mb-2" />
-                      <p className="text-neutral-400 text-sm">검색 결과와 일치하는 원작 소설이 없습니다.</p>
+            {/* 독립 소설 서재: 웹툰의 목록·폴더·최신화·TOP10 구조를 그대로 적용 */}
+            {activeTab === 'novel' && (
+              <div className="space-y-5">
+                <section className="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-xl">
+                  <div className="flex items-center gap-3 mb-3">
+                    <BookOpen className="w-5 h-5 text-indigo-400" />
+                    <h2 className="text-base font-semibold text-neutral-100">소설 서재에 작품 추가하기</h2>
+                  </div>
+                  <form onSubmit={handleAddNovel} className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input value={novelTitleInput} onChange={e => setNovelTitleInput(e.target.value)} placeholder="소설 제목 (필수)" className="bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2.5 text-sm text-white" />
+                      <input value={novelAuthorInput} onChange={e => setNovelAuthorInput(e.target.value)} placeholder="작가 (선택)" className="bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2.5 text-sm text-white" />
+                      <input value={novelPlatformInput} onChange={e => setNovelPlatformInput(e.target.value)} placeholder="연재 플랫폼 (예: 문피아, 카카오페이지)" className="bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2.5 text-sm text-white" />
+                      <input value={novelUrlInput} onChange={e => setNovelUrlInput(e.target.value)} placeholder="작품 URL (선택)" className="bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2.5 text-sm text-white" />
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {filteredNovels.map((novel, idx) => (
-                        <div 
-                          key={idx}
-                          className="bg-neutral-950/80 border border-neutral-800 hover:border-indigo-500/50 rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition shadow-lg"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-900/60 font-semibold">
-                                {novel.platform || '웹소설 플랫폼'}
-                              </span>
-                              <span className="text-xs text-neutral-400 font-mono">
-                                {novel.status}
-                              </span>
-                            </div>
+                    <textarea value={novelSynopsisInput} onChange={e => setNovelSynopsisInput(e.target.value)} rows="2" placeholder="작품 소개 / 시놉시스 (선택)" className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2.5 text-sm text-white" />
+                    <button type="submit" className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold">+ 소설 추가</button>
+                  </form>
+                </section>
 
-                            <h3 className="text-base sm:text-lg font-bold text-white mb-1">
-                              {novel.title} <span className="text-xs text-neutral-400 font-normal">원작 소설</span>
-                            </h3>
-                            <p className="text-xs text-indigo-400 mb-3 font-medium">
-                              저자: {novel.author} | 출판사: {novel.publisher}
-                            </p>
+                <section className="bg-gradient-to-r from-indigo-950/60 to-purple-950/40 border border-indigo-900/50 rounded-2xl p-4 sm:p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div><h2 className="text-lg font-bold text-white">소설 소장 폴더</h2><p className="text-xs text-neutral-400 mt-1">웹툰 폴더와 별개로 소설을 자유롭게 분류할 수 있어.</p></div>
+                    <button type="button" onClick={handleCreateNovelFolder} className="px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> 폴더 만들기</button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={() => setSelectedNovelFolder('ALL')} className={`text-xs px-3 py-1.5 rounded-lg ${selectedNovelFolder === 'ALL' ? 'bg-indigo-600 text-white' : 'bg-neutral-900 text-neutral-300 border border-neutral-700'}`}>전체 ({novels.length})</button>
+                    {novelFolders.map(folder => <button key={folder} onClick={() => setSelectedNovelFolder(folder)} className={`text-xs px-3 py-1.5 rounded-lg ${selectedNovelFolder === folder ? 'bg-indigo-600 text-white' : 'bg-neutral-900 text-neutral-300 border border-neutral-700'}`}>{folder} ({novels.filter(n => (n.folder || '미분류') === folder).length})</button>)}
+                  </div>
+                </section>
 
-                            <p className="text-neutral-300 text-xs sm:text-sm leading-relaxed mb-4 bg-neutral-900/60 p-3 rounded-xl border border-neutral-800/80">
-                              {novel.synopsis}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between pt-3 border-t border-neutral-800">
-                            <div className="flex items-center space-x-1.5 text-xs text-neutral-400">
-                              <Bookmark className="w-3.5 h-3.5 text-indigo-400" />
-                              <span>{novel.genre}</span>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                              {novel.ridiUrl && (
-                                <a
-                                  href={novel.ridiUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-xs bg-neutral-800 active:bg-neutral-700 text-neutral-200 px-3 py-1.5 rounded-lg border border-neutral-700 font-medium transition"
-                                >
-                                  리디북스
-                                </a>
-                              )}
-                              {novel.searchUrl && (
-                                <a
-                                  href={novel.searchUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center space-x-1 text-xs bg-indigo-600 active:bg-indigo-500 text-white px-3.5 py-1.5 rounded-lg font-semibold shadow-md shadow-indigo-950 transition"
-                                >
-                                  <span>읽으러 가기</span>
-                                  <ExternalLink className="w-3.5 h-3.5" />
-                                </a>
-                              )}
-                            </div>
+                <div className="space-y-3">
+                  {visibleNovels.length === 0 ? (
+                    <div className="text-center py-12 bg-neutral-900/50 border border-dashed border-neutral-800 rounded-2xl"><BookOpen className="w-10 h-10 text-neutral-600 mx-auto mb-3" /><p className="text-neutral-300 font-semibold">이 목록에는 소설이 없습니다.</p><p className="text-xs text-neutral-500 mt-1">위 입력란에서 소설을 추가하거나 다른 폴더를 선택해 주세요.</p></div>
+                  ) : visibleNovels.map((item, index) => (
+                    <div key={item.id} className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-md">
+                      <div className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div className="flex items-start gap-3 min-w-0 flex-1">
+                          <div className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center bg-indigo-950 border border-indigo-800 text-indigo-300 font-black">#{index + 1}</div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-bold text-white text-base sm:text-lg break-words">{item.title}</h3>
+                            <p className="text-xs text-neutral-400 mt-1">작가: {item.author || '미입력'} · 플랫폼: {item.platform || '미입력'}</p>
+                            <p className="text-xs text-neutral-500 mt-1">최신화 반영: {item.lastChapterAt ? new Date(item.lastChapterAt).toLocaleString('ko-KR') : '아직 기록 없음'} · 폴더: {item.folder || '미분류'}</p>
+                            {item.synopsis && <p className="text-sm text-neutral-300 mt-2 whitespace-pre-wrap">{item.synopsis}</p>}
                           </div>
                         </div>
-                      ))}
+                        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                          <button onClick={() => handleToggleNovelTop10(item.id)} className={`text-xs font-semibold px-3 py-2 rounded-lg border ${item.top10Rank ? 'bg-amber-600/20 border-amber-500 text-amber-300' : 'bg-neutral-800 border-neutral-700 text-neutral-300'}`}>{item.top10Rank ? `TOP ${item.top10Rank}` : 'TOP10 추가'}</button>
+                          <button onClick={() => handleNovelUpdate(item.id)} className="text-xs bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold px-3 py-2 rounded-lg">최신화 반영</button>
+                          <select aria-label={`${item.title} 소장 폴더`} value={item.folder || '미분류'} onChange={e => setNovels(current => current.map(n => n.id === item.id ? {...n, folder: e.target.value} : n))} className="text-xs bg-neutral-800 border border-neutral-700 rounded-lg px-2 py-2 text-neutral-200">
+                            {Array.from(new Set(['미분류', ...novelFolders, item.folder || '미분류'])).map(folder => <option key={folder} value={folder}>{folder}</option>)}
+                          </select>
+                          <button onClick={() => handleNovelEdit(item)} className="text-xs px-3 py-2 bg-neutral-800 text-neutral-200 rounded-lg border border-neutral-700">수정</button>
+                          {item.url && <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-2 bg-indigo-700 text-white rounded-lg flex items-center gap-1">작품 보기 <ExternalLink className="w-3.5 h-3.5" /></a>}
+                          <button onClick={() => handleNovelDelete(item.id)} className="text-xs px-3 py-2 bg-neutral-800 text-rose-300 rounded-lg border border-neutral-700">삭제</button>
+                        </div>
+                      </div>
                     </div>
-                  )}
+                  ))}
                 </div>
+              </div>
+            )}
+
+            {/* 독립 소설 TOP 10 */}
+            {activeTab === 'novelTop10' && (
+              <div className="space-y-5">
+                <section className="bg-gradient-to-r from-amber-950/60 to-indigo-950/40 border border-amber-900/50 rounded-2xl p-5 sm:p-6">
+                  <div className="flex items-center gap-3 mb-2"><Flame className="w-6 h-6 text-amber-400" /><h2 className="text-xl font-bold text-white">나만의 소설 TOP 10</h2></div>
+                  <p className="text-sm text-neutral-300">소설 서재에서 TOP10 추가를 누르고, 위·아래 버튼으로 순위를 조정하세요. 웹툰 TOP 10과 별도로 저장됩니다.</p>
+                </section>
+                {top10Novels.length === 0 ? (
+                  <div className="text-center py-14 bg-neutral-900/50 border border-dashed border-neutral-800 rounded-2xl"><Flame className="w-10 h-10 text-neutral-600 mx-auto mb-3" /><p className="text-neutral-300 font-semibold">아직 소설 TOP 10 작품이 없습니다.</p><button onClick={() => setActiveTab('novel')} className="mt-4 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm">소설 서재로 이동</button></div>
+                ) : (
+                  <div className="space-y-3">{top10Novels.map((item, index) => (
+                    <div key={`novel-top10-${item.id}`} className="flex items-center gap-3 p-4 rounded-xl border border-neutral-800 bg-neutral-900">
+                      <div className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-amber-950 border border-amber-700 text-amber-300 font-black">{item.top10Rank}</div>
+                      <div className="min-w-0 flex-1"><h3 className="font-bold text-white">{item.title}</h3><p className="text-xs text-neutral-400 mt-1">{item.author || '작가 미입력'} · {item.platform || '플랫폼 미입력'} · 폴더: {item.folder || '미분류'}</p></div>
+                      <div className="flex flex-col gap-1"><button disabled={index === 0} onClick={() => moveNovelTop10(item.id, -1)} className="px-2 py-1 rounded bg-neutral-800 text-xs disabled:opacity-30">▲</button><button disabled={index === top10Novels.length - 1} onClick={() => moveNovelTop10(item.id, 1)} className="px-2 py-1 rounded bg-neutral-800 text-xs disabled:opacity-30">▼</button><button onClick={() => handleToggleNovelTop10(item.id)} className="px-2 py-1 rounded bg-rose-950 text-rose-300 text-xs">제외</button></div>
+                    </div>
+                  ))}</div>
+                )}
               </div>
             )}
           </main>
 
-          {/* 편집 팝업 모달 */}
+          {/* 편집 모달 (소장 분류 카테고리 수정 기능 포함) */}
           {editingItem && editForm && (
             <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
               <div className="bg-neutral-900 border border-neutral-700 w-full max-w-2xl rounded-2xl shadow-2xl p-5 sm:p-6 relative max-h-[88vh] overflow-y-auto">
@@ -1298,7 +1243,7 @@
                   <div className="flex items-center space-x-2">
                     <Sliders className="w-5 h-5 text-purple-400" />
                     <h3 className="font-bold text-base sm:text-lg text-white">
-                      [{editForm.title}] 정보 및 원작 소설 수정
+                      [{editForm.title}] 정보 및 소장 분류 편집
                     </h3>
                   </div>
                   <button 
@@ -1312,7 +1257,7 @@
                 <div className="space-y-4 text-sm">
                   <div>
                     <label className="block text-xs font-semibold text-purple-400 mb-1">
-                      입덕하게 된 계기 / 나의 추천 이유
+                      입덕 코멘트 / 추천 이유
                     </label>
                     <textarea
                       rows={2}
@@ -1322,140 +1267,31 @@
                     />
                   </div>
 
-                  {/* 원작 소설 정보 편집 */}
-                  <div className="bg-neutral-950 p-3.5 rounded-xl border border-indigo-900/50 space-y-3">
-                    <span className="text-xs font-bold text-indigo-400 block mb-1">📚 원작 소설 연동 정보 수정</span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                      <div>
-                        <label className="block text-neutral-400 mb-1">소설 작가</label>
-                        <input
-                          type="text"
-                          value={editForm.novelInfo?.author || ''}
-                          onChange={(e) => setEditForm({
-                            ...editForm,
-                            novelInfo: { ...editForm.novelInfo, author: e.target.value }
-                          })}
-                          className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-2 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-neutral-400 mb-1">연재 플랫폼</label>
-                        <input
-                          type="text"
-                          value={editForm.novelInfo?.platform || ''}
-                          onChange={(e) => setEditForm({
-                            ...editForm,
-                            novelInfo: { ...editForm.novelInfo, platform: e.target.value }
-                          })}
-                          className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-2 text-white"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                      <div>
-                        <label className="block text-neutral-400 mb-1">연재 상태</label>
-                        <input
-                          type="text"
-                          value={editForm.novelInfo?.status || ''}
-                          onChange={(e) => setEditForm({
-                            ...editForm,
-                            novelInfo: { ...editForm.novelInfo, status: e.target.value }
-                          })}
-                          className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-2 text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-neutral-400 mb-1">소설 바로가기 링크 (URL)</label>
-                        <input
-                          type="text"
-                          value={editForm.novelInfo?.searchUrl || ''}
-                          onChange={(e) => setEditForm({
-                            ...editForm,
-                            novelInfo: { ...editForm.novelInfo, searchUrl: e.target.value }
-                          })}
-                          className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-2 text-white"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-neutral-400 mb-1 text-xs">소설 시놉시스</label>
-                      <textarea
-                        rows={2}
-                        value={editForm.novelInfo?.synopsis || ''}
-                        onChange={(e) => setEditForm({
-                          ...editForm,
-                          novelInfo: { ...editForm.novelInfo, synopsis: e.target.value }
-                        })}
-                        className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-2 text-white text-xs"
-                      />
+                  <div className="bg-purple-950/20 p-3 rounded-xl border border-purple-900/40">
+                    <div className="text-xs font-bold text-purple-300 mb-2 flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" /> 웹툰 소장 폴더</div>
+                    <label className="block text-xs text-neutral-300 mb-1">웹툰을 넣을 폴더</label>
+                    <div className="flex gap-2">
+                      <select value={editForm.webtoonFolder || '미분류'} onChange={(e) => setEditForm({ ...editForm, webtoonFolder: e.target.value })} className="min-w-0 flex-1 bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100 text-xs">
+                        {Array.from(new Set(['미분류', ...webtoonFolderNames, editForm.webtoonFolder || '미분류'])).map(folder => <option key={folder} value={folder}>{folder}</option>)}
+                      </select>
+                      <button type="button" onClick={() => {
+                        const name = window.prompt('새 웹툰 소장 폴더 이름을 입력하세요.');
+                        if (name && name.trim()) {
+                          const trimmed = name.trim();
+                          if (!webtoonFolderNames.some(folder => folder.toLowerCase() === trimmed.toLowerCase())) setWebtoonFolderNames(current => [...current, trimmed]);
+                          setEditForm(current => ({ ...current, webtoonFolder: trimmed }));
+                        }
+                      }} className="shrink-0 px-3 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold">+ 폴더</button>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                      세계관 설정
-                    </label>
+                    <label className="block text-xs font-semibold text-neutral-300 mb-1">세계관 설정</label>
                     <textarea
                       rows={2}
                       value={editForm.worldSetting}
                       onChange={(e) => setEditForm({ ...editForm, worldSetting: e.target.value })}
-                      className="w-full bg-neutral-950 border border-neutral-700 rounded-xl p-3 text-neutral-100 focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                        대표 캐릭터 이름
-                      </label>
-                      <input
-                        type="text"
-                        value={editForm.characterName}
-                        onChange={(e) => setEditForm({ ...editForm, characterName: e.target.value })}
-                        className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100 focus:outline-none focus:border-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                        캐릭터 역할/이명
-                      </label>
-                      <input
-                        type="text"
-                        value={editForm.characterRole}
-                        onChange={(e) => setEditForm({ ...editForm, characterRole: e.target.value })}
-                        className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100 focus:outline-none focus:border-purple-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                        전투력 등급 (티어)
-                      </label>
-                      <input
-                        type="text"
-                        value={editForm.combatTier}
-                        onChange={(e) => setEditForm({ ...editForm, combatTier: e.target.value })}
-                        className="w-full bg-neutral-950 border border-neutral-700 rounded-xl px-3 py-2 text-neutral-100 focus:outline-none focus:border-purple-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <label className="text-xs font-semibold text-neutral-300">
-                        종합 전투력 (CP)
-                      </label>
-                      <span className="font-mono text-amber-400 font-bold">
-                        {Number(editForm.combatPower).toLocaleString()} CP
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1000"
-                      max="100000"
-                      step="500"
-                      value={editForm.combatPower}
-                      onChange={(e) => setEditForm({ ...editForm, combatPower: Number(e.target.value) })}
-                      className="w-full accent-purple-500 cursor-pointer"
+                      className="w-full bg-neutral-950 border border-neutral-700 rounded-xl p-3 text-neutral-100 text-xs"
                     />
                   </div>
                 </div>
@@ -1464,17 +1300,17 @@
                   <button
                     type="button"
                     onClick={() => setEditingItem(null)}
-                    className="px-4 py-2.5 rounded-xl bg-neutral-800 active:bg-neutral-700 text-neutral-300 text-xs font-semibold transition"
+                    className="px-4 py-2.5 rounded-xl bg-neutral-800 active:bg-neutral-700 text-neutral-300 text-xs font-semibold"
                   >
                     취소
                   </button>
                   <button
                     type="button"
                     onClick={handleSaveEdit}
-                    className="px-5 py-2.5 rounded-xl bg-purple-600 active:bg-purple-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-lg shadow-purple-900/40 transition"
+                    className="px-5 py-2.5 rounded-xl bg-purple-600 active:bg-purple-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-lg shadow-purple-900/40"
                   >
                     <Check className="w-4 h-4" />
-                    <span>저장하기</span>
+                    <span>저장</span>
                   </button>
                 </div>
               </div>
@@ -1484,6 +1320,9 @@
       );
     }
 
+    if (!window.React || !window.ReactDOM || !window.ReactDOM.createRoot) {
+      throw new Error('React 라이브러리를 불러오지 못했습니다. 인터넷 연결 또는 CDN 접근을 확인하세요.');
+    }
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
