@@ -1,0 +1,50 @@
+name: Build iOS IPA (No Mac Required)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: # GitHub 웹페이지에서 버튼 클릭으로 실행 가능
+
+jobs:
+  build_ipa:
+    runs-on: macos-latest # GitHub의 무료 Mac 컴퓨터 대여
+
+    steps:
+      - name: 1. 내 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: 2. Node.js 설치
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 3. Capacitor 설치 및 iOS 프로젝트 자동 생성
+        run: |
+          npm install
+          npx cap add ios
+          npx cap sync ios
+
+      - name: 4. Xcode로 서명 없는 앱(.app) 빌드하기
+        run: |
+          cd ios/App
+          xcodebuild -project App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            clean build
+
+      - name: 5. 아이폰 설치 파일(.ipa)로 압축 포장하기
+        run: |
+          mkdir -p Payload
+          cp -r ios/App/build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -r WebtoonLab.ipa Payload
+
+      - name: 6. 완성된 .ipa 파일 다운로드 가능하게 올리기
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebtoonLab-iOS-IPA
+          path: WebtoonLab.ipa
