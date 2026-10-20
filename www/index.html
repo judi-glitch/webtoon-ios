@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="웹툰·소설 아카이브">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+
+  <title>웹툰·소설 아카이브</title>
+
+  <script>
+    (function() {
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        var grad = ctx.createLinearGradient(0, 0, 512, 512);
+        grad.addColorStop(0, '#7e22ce');
+        grad.addColorStop(1, '#1e1b4b');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 512);
+
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.35)';
+        ctx.lineWidth = 16;
+        ctx.beginPath();
+        ctx.arc(256, 256, 200, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = 'bold 150px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText('📚', 256, 205);
+
+        ctx.font = '900 64px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillStyle = '#f3e8ff';
+        ctx.fillText('ARCHIVE', 256, 365);
+
+        var iconUrl = canvas.toDataURL('image/png');
+
+        var appleIcon = document.createElement('link');
+        appleIcon.rel = 'apple-touch-icon';
+        appleIcon.href = iconUrl;
+        document.head.appendChild(appleIcon);
+
+        var favIcon = document.createElement('link');
+        favIcon.rel = 'icon';
+        favIcon.type = 'image/png';
+        favIcon.href = iconUrl;
+        document.head.appendChild(favIcon);
+
+        if (location.protocol === 'http:' || location.protocol === 'https:') {
+          var manifest = {
+            name: "웹툰·소설 아카이브",
+            short_name: "웹툰소설아카이브",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#0a0a0a",
+            theme_color: "#0a0a0a",
+            orientation: "portrait",
+            icons: [
+              {
+                src: iconUrl,
+                sizes: "512x512",
+                type: "image/png",
+                purpose: "any maskable"
+              }
+            ]
+          };
+          var manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+          var manifestLink = document.createElement('link');
+          manifestLink.rel = 'manifest';
+          manifestLink.href = URL.createObjectURL(manifestBlob);
+          document.head.appendChild(manifestLink);
+        }
+      } catch (e) {
+        // iOS 파일 앱 미리보기(Quick Look) 등 제한된 환경에서 무시
+      }
+    })();
+  </script>
+
+  <style>
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+      --sar: env(safe-area-inset-right, 0px);
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      background-color: #0a0a0a;
+      color: #f5f5f5;
+    }
+    body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      background-color: #0a0a0a;
+      color: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", system-ui, sans-serif;
+      padding-bottom: calc(var(--sab) + 64px);
+      padding-left: var(--sal);
+      padding-right: var(--sar);
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior-y: none;
+      user-select: none;
+      -webkit-user-select: none;
+      line-height: 1.5;
+    }
+    input, textarea, select {
+      user-select: text;
+      -webkit-user-select: text;
+      font-size: 16px !important;
+      font-family: inherit;
+      color: #f5f5f5;
+      background-color: #0a0a0a;
+      border: 1px solid #404040;
+      border-radius: 12px;
+      padding: 10px 14px;
+      width: 100%;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.15s ease;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px !important;
+    }
+    input::placeholder, textarea::placeholder {
+      color: #737373;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #a855f7;
+    }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+      -webkit-appearance: none;
+      appearance: none;
+      touch-action: manipulation;
+      transition: transform 0.1s ease, opacity 0.15s ease, background-color 0.15s ease;
+    }
+    button:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+    button:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+      touch-action: manipulation;
+    }
+
+    /* 레이아웃 유틸리티 */
+    .container {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .ios-safe-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding-top: max(var(--sat), 10px);
+      background-color: rgba(23, 23, 23, 0.88);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #262626;
+    }
+    .header-top {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    @media (min-width: 640px) {
+      .header-top {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      padding: 8px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #9333ea, #4f46e5);
+      box-shadow: 0 6px 16px rgba(147, 51, 234, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #ffffff, #e9d5ff, #c084fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: #a3a3a3;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .count-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      background-color: rgba(38, 38, 38, 0.85);
+      padding: 6px 12px;
+      border-radius: 9999px;
+      border: 1px solid #404040;
+    }
+    .btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      background-color: #262626;
+      color: #e5e5e5;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      border: 1px solid #404040;
+      font-weight: 600;
+    }
+    .btn-icon-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      background-color: #262626;
+      color: #a3a3a3;
+      border-radius: 9999px;
+      border: 1px solid #404040;
+    }
+
+    /* 탭 네비게이션 (아이폰 화면에서도 깨지지 않도록 2x2 그리드 + 데스크톱 가로 배치) */
+    .tab-bar {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding-top: 8px;
+      padding-bottom: 10px;
+      border-top: 1px solid rgba(38, 38, 38, 0.7);
+    }
+    @media (min-width: 640px) {
+      .tab-bar {
+        display: flex;
+        flex-wrap: wrap;
+      }
+    }
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      background-color: #171717;
+      color: #a3a3a3;
+      border: 1px solid #262626;
+      white-space: nowrap;
+    }
+    .tab-btn.active-purple {
+      background-color: #9333ea;
+      color: #ffffff;
+      border-color: #a855f7;
+      box-shadow: 0 4px 12px rgba(147, 51, 234, 0.35);
+    }
+    .tab-btn.active-amber {
+      background-color: #d97706;
+      color: #ffffff;
+      border-color: #f59e0b;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+    }
+    .tab-btn.active-indigo {
+      background-color: #4f46e5;
+      color: #ffffff;
+      border-color: #6366f1;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+    }
+
+    /* 카드 및 섹션 */
+    .section-card {
+      background-color: rgba(23, 23, 23, 0.92);
+      border: 1px solid #262626;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    @media (min-width: 640px) {
+      .section-card {
+        padding: 22px;
+      }
+    }
+    .banner-amber {
+      background: linear-gradient(90deg, rgba(69, 26, 3, 0.65), rgba(67, 20, 7, 0.45));
+      border: 1px solid rgba(120, 53, 15, 0.55);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .banner-indigo {
+      background: linear-gradient(90deg, rgba(30, 27, 75, 0.65), rgba(59, 7, 100, 0.4));
+      border: 1px solid rgba(49, 46, 129, 0.55);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .preset-chip {
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #404040;
+      background-color: #262626;
+      color: #d4d4d4;
+    }
+    .preset-chip.active {
+      background-color: #9333ea;
+      border-color: #a855f7;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .folder-chip {
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid #404040;
+      background-color: #0a0a0a;
+      color: #d4d4d4;
+    }
+    .folder-chip.active-purple {
+      background-color: #9333ea;
+      border-color: #a855f7;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .folder-chip.active-indigo {
+      background-color: #4f46e5;
+      border-color: #6366f1;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .item-card {
+      background-color: #171717;
+      border: 1px solid #262626;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+    .item-bar {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(90deg, #9333ea, #4f46e5);
+    }
+    .item-bar.rose { background: linear-gradient(90deg, #e11d48, #881337); }
+    .item-bar.blue { background: linear-gradient(90deg, #2563eb, #1e3a8a); }
+    .item-bar.amber { background: linear-gradient(90deg, #d97706, #78350f); }
+    .item-bar.emerald { background: linear-gradient(90deg, #059669, #064e3b); }
+    .item-bar.zinc { background: linear-gradient(90deg, #52525b, #27272a); }
+
+    .item-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    @media (min-width: 640px) {
+      .item-body {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    .rank-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background-color: #3b0764;
+      color: #d8b4fe;
+      border: 1px solid #6b21a8;
+    }
+    .rank-badge.indigo {
+      background-color: #1e1b4b;
+      color: #a5b4fc;
+      border-color: #3730a3;
+    }
+    .rank-badge.amber {
+      width: 40px;
+      height: 40px;
+      background-color: #451a03;
+      color: #fcd34d;
+      border-color: #b45309;
+      font-size: 15px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 9px;
+      border: 1px solid #404040;
+      background-color: #262626;
+      color: #e5e5e5;
+    }
+    .action-btn.amber-active {
+      background-color: rgba(217, 119, 6, 0.2);
+      border-color: #f59e0b;
+      color: #fcd34d;
+    }
+    .action-btn.orange-grad {
+      background: linear-gradient(90deg, #d97706, #ea580c);
+      border-color: transparent;
+      color: #ffffff;
+    }
+    .action-btn.indigo-solid {
+      background-color: #4f46e5;
+      border-color: #6366f1;
+      color: #ffffff;
+    }
+    .action-btn.emerald-done {
+      background-color: rgba(6, 78, 59, 0.6);
+      border-color: #065f46;
+      color: #6ee7b7;
+    }
+    .action-btn.danger {
+      color: #fda4af;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 640px) {
+      .form-grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 768px) {
+      .form-grid-3 {
+        grid-template-columns: 1fr 2fr;
+      }
+    }
+
+    .primary-submit-btn {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(90deg, #9333ea, #4f46e5);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(147, 51, 234, 0.35);
+    }
+    @media (min-width: 640px) {
+      .primary-submit-btn {
+        width: auto;
+      }
+    }
+
+    /* 모달 및 토스트 */
+    .toast-box {
+      position: fixed;
+      top: max(calc(var(--sat) + 16px), 24px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      width: 90%;
+      max-width: 380px;
+      background-color: rgba(23, 23, 23, 0.96);
+      border: 1px solid rgba(168, 85, 247, 0.65);
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background-color: rgba(0, 0, 0, 0.8);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .modal-card {
+      background-color: #171717;
+      border: 1px solid #404040;
+      width: 100%;
+      max-width: 560px;
+      border-radius: 18px;
+      padding: 20px;
+      max-height: 88vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+    .empty-box {
+      text-align: center;
+      padding: 52px 20px;
+      background-color: rgba(23, 23, 23, 0.45);
+      border: 1px dashed #262626;
+      border-radius: 16px;
+    }
+    svg.icon {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    (function () {
+      // iOS 파일 앱 미리보기(Quick Look)나 사파리 개인정보보호 모드에서도 절대 멈추지 않는 안전 스토리지
+      var memoryStore = {};
+      var safeStorage = {
+        getItem: function (key) {
+          try {
+            return window.localStorage.getItem(key);
+          } catch (e) {
+            return Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null;
+          }
+        },
+        setItem: function (key, value) {
+          try {
+            window.localStorage.setItem(key, value);
+          } catch (e) {
+            memoryStore[key] = String(value);
+          }
+        }
+      };
+
+      // SVG 아이콘 헬퍼
+      var ICONS = {
+        bookOpen: '<svg class="icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+        sparkles: '<svg class="icon" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>',
+        edit: '<svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+        trash: '<svg class="icon" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>',
+        plus: '<svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+        flame: '<svg class="icon" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+        search: '<svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+        rotateCcw: '<svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>',
+        check: '<svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
+        x: '<svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+        share: '<svg class="icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>',
+        sliders: '<svg class="icon" viewBox="0 0 24 24"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/></svg>',
+        externalLink: '<svg class="icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>',
+        bell: '<svg class="icon" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.33 21a1.94 1.94 0 0 0 3.34 0"/></svg>'
+      };
+
+      // 프리셋 웹툰 데이터
+      var PRESET_WEBTOONS = {
+        "나 혼자만 레벨업": {
+          genre: "현대 판타지 / 헌터 액션",
+          worldSetting: "세계 각지에 마물이 나오는 '게이트'와 마력을 각성한 '헌터'들이 공존하는 현대 세계.",
+          characterName: "성진우 (그림자 군주)",
+          characterRole: "주인공 / 그림자 군주",
+          combatPower: 99999,
+          combatTier: "EX (군주급 / 행성 붕괴급)",
+          stats: { attack: 99, defense: 95, speed: 99, mana: 100, intellect: 92 },
+          background: "E급 최약체 헌터였으나 시스템의 플레이어로 간택되어 그림자 군주로 각성함.",
+          themeColor: "purple",
+          badgeColor: "bg-purple-600",
+          defaultReason: "최약체에서 최강자로 거듭나는 카타르시스와 그림자 군단 연출이 압권!",
+          novelTitle: "나 혼자만 레벨업 (원작 소설)",
+          novelAuthor: "추공",
+          novelPlatform: "카카오페이지 (KakaoPage)",
+          novelUrl: "https://page.kakao.com/content/48624838",
+          novelChapters: "완결 (본편 270화 + 외전)",
+          novelSynopsis: "E급 헌터 성진우. 이중 던전에서 죽음을 맞이하기 직전, 기괴한 퀘스트 창이 눈앞에 나타났다. 살고 싶다면 내게 복종하라!",
+          novelCategory: "현대판타지 / 헌터"
+        },
+        "전지적 독자 시점": {
+          genre: "아포칼립스 / 판타지",
+          worldSetting: "멸망해버린 소설 '멸살법'의 현실화. 성좌 후원형 스타 스트림 생중계 세계관.",
+          characterName: "유중혁 (패왕)",
+          characterRole: "소설 속 주인공 / 회귀자",
+          combatPower: 88500,
+          combatTier: "SSS+ (신화급 도전자)",
+          stats: { attack: 96, defense: 92, speed: 94, mana: 88, intellect: 84 },
+          background: "수백 번의 삶을 회귀하며 멸망을 막기 위해 고독하게 칼을 갈아온 패왕.",
+          themeColor: "blue",
+          badgeColor: "bg-blue-600",
+          defaultReason: "탄탄한 성좌 메타포와 독자와 주인공의 애증 관계, 방대한 복선 회수.",
+          novelTitle: "전지적 독자 시점 (원작 소설)",
+          novelAuthor: "싱숑",
+          novelPlatform: "문피아 / 네이버 시리즈",
+          novelUrl: "https://series.naver.com/novel/detail.series?productNo=4735515",
+          novelChapters: "완결 (본편 551화)",
+          novelSynopsis: "오직 나만이, 이 세계의 결말을 알고 있다. 웹소설 '멸망한 세계에서 살아남는 세 가지 방법'이 현실이 되었다.",
+          novelCategory: "판타지 / 아포칼립스"
+        },
+        "화산귀환": {
+          genre: "신무협 / 환생",
+          worldSetting: "십만대산에서 천마를 참살하고 전멸한 화산파. 백 년 뒤 망해버린 화산파의 재건.",
+          characterName: "청명 (매화검존 / 화산신룡)",
+          characterRole: "화산파 23대 제자",
+          combatPower: 92000,
+          combatTier: "SSS (초절정 천하제일검)",
+          stats: { attack: 98, defense: 89, speed: 97, mana: 94, intellect: 90 },
+          background: "화산의 대장로 매화검존이 아이의 몸으로 환생해 화산을 멱살 잡고 캐리함.",
+          themeColor: "rose",
+          badgeColor: "bg-rose-600",
+          defaultReason: "청명이의 참교육 액션과 사형제들의 끈끈한 서사가 눈물샘을 자극함!",
+          novelTitle: "화산귀환 (원작 소설)",
+          novelAuthor: "비가",
+          novelPlatform: "네이버 시리즈",
+          novelUrl: "https://series.naver.com/novel/detail.series?productNo=4562522",
+          novelChapters: "연재 중 (1500화 이상)",
+          novelSynopsis: "화산파의 13대 제자이자 천하제일검 매화검존 청명. 천마와의 대전 후 눈을 떠보니 100년 뒤의 세상이었다.",
+          novelCategory: "무협 / 회귀"
+        },
+        "신의 탑": {
+          genre: "판타지 / 어드벤처",
+          worldSetting: "원하는 모든 것이 있다는 거대한 미지의 탑과 신수 세계관.",
+          characterName: "스물다섯번째 밤",
+          characterRole: "슬레이어 후보",
+          combatPower: 89000,
+          combatTier: "SS+ (하이랭커 상위권 잠재력)",
+          stats: { attack: 93, defense: 86, speed: 90, mana: 99, intellect: 85 },
+          background: "소녀 라헬을 쫓아 탑의 문을 스스로 열고 들어온 소년.",
+          themeColor: "amber",
+          badgeColor: "bg-amber-600",
+          defaultReason: "방대한 층별 세계관과 매력적인 조연 캐릭터들, 신수 능력 체계.",
+          novelTitle: "신의 탑 (웹툰 원작 / 연재처)",
+          novelAuthor: "SIU",
+          novelPlatform: "네이버 웹툰",
+          novelUrl: "https://comic.naver.com/webtoon/list?titleId=18355",
+          novelChapters: "연재 중",
+          novelSynopsis: "자신의 전부였던 소녀를 쫓아 탑에 들어온 소년, 그리고 그 탑을 오르는 이들의 모험.",
+          novelCategory: "정통 판타지"
+        },
+        "외모지상주의": {
+          genre: "학원 액션 / 느와르",
+          worldSetting: "완벽한 두 번째 육체를 얻은 고등학생과 4대 크루의 권력 다툼.",
+          characterName: "박형석",
+          characterRole: "2개의 몸 보유자",
+          combatPower: 76000,
+          combatTier: "S+ (1세대 마이너 왕급 돌파)",
+          stats: { attack: 88, defense: 84, speed: 91, mana: 40, intellect: 82 },
+          background: "외모로 차별받다 잠들면 깨어나는 완벽한 미남 체질을 얻음.",
+          themeColor: "zinc",
+          badgeColor: "bg-zinc-600",
+          defaultReason: "초반의 외모 메시지부터 후반부 4대 크루 액션물의 도파민 폭발.",
+          novelTitle: "외모지상주의 (오리지널 웹툰)",
+          novelAuthor: "박태준",
+          novelPlatform: "네이버 웹툰",
+          novelUrl: "https://comic.naver.com/webtoon/list?titleId=641253",
+          novelChapters: "연재 중",
+          novelSynopsis: "누구나 부러워할 만큼 잘생긴 외모와 완벽한 몸을 갖게 된 왕따 소년의 이중 생활.",
+          novelCategory: "학원 액션 / 느와르"
+        }
+      };
+
+      function generateSmartWebtoonData(title) {
+        var hash = 0;
+        for (var i = 0; i < title.length; i++) {
+          hash = (hash << 5) - hash + title.charCodeAt(i);
+          hash |= 0;
+        }
+        var absHash = Math.abs(hash);
+        var genres = ["어반 판타지 액션", "다크 아포칼립스", "퓨전 무협 판타지", "사이버펑크 레이드", "차원 침공 / 헌터물", "환생 복수극"];
+        var roles = ["주인공 / 각성자", "세계선 수호자", "그림자 암살자", "원탑 능력자", "최연소 절대자"];
+        var tiers = ["S+", "SS", "SS+", "SSS", "EX (규격 외)"];
+        var colors = ["purple", "rose", "blue", "amber", "emerald"];
+
+        return {
+          genre: genres[absHash % genres.length],
+          worldSetting: "[" + title + "]의 고유한 법칙이 지배하는 세계. 예측할 수 없는 위기와 세력 간의 충돌 무대.",
+          characterName: title + "의 핵심 주역",
+          characterRole: roles[(absHash >> 2) % roles.length],
+          combatPower: 50000 + (absHash % 49000),
+          combatTier: tiers[(absHash >> 3) % tiers.length] + " (측정 불가 전투력)",
+          stats: {
+            attack: 70 + (absHash % 29),
+            defense: 65 + ((absHash >> 1) % 33),
+            speed: 72 + ((absHash >> 2) % 27),
+            mana: 60 + ((absHash >> 3) % 39),
+            intellect: 75 + ((absHash >> 4) % 24)
+          },
+          background: "한계를 돌파하여 전세를 단숨에 뒤집는 결정적 전투력을 보유한 인물.",
+          themeColor: colors[absHash % colors.length],
+          defaultReason: "스토리 전개의 신선함과 주인공의 폭발적인 성장이 인상 깊어 아카이브에 등록함!",
+          novelTitle: title + " (원작 소설)",
+          novelAuthor: "인기 작가",
+          novelPlatform: "네이버 시리즈 / 카카오페이지",
+          novelUrl: "https://series.naver.com",
+          novelChapters: "연재 중 / 완결",
+          novelSynopsis: title + "의 원작 소설로 웹툰에서 다뤄지지 않은 섬세한 심리 묘사와 방대한 세계관 설정이 담겨 있습니다.",
+          novelCategory: "판타지 / 기타"
+        };
+      }
+
+      function getDefaultWebtoons() {
+        return ["나 혼자만 레벨업", "전지적 독자 시점", "화산귀환"].map(function (title, idx) {
+          var preset = PRESET_WEBTOONS[title];
+          var copy = {};
+          for (var k in preset) copy[k] = preset[k];
+          copy.id = "wt-" + Date.now() + "-" + idx;
+          copy.title = title;
+          copy.reason = preset.defaultReason;
+          copy.updatedAt = Date.now() - idx * 10000;
+          copy.lastChapterAt = null;
+          copy.top10Rank = null;
+          copy.webtoonFolder = "미분류";
+          return copy;
+        });
+      }
+
+      function loadJSON(key, fallback) {
+        try {
+          var raw = safeStorage.getItem(key);
+          if (raw !== null) return JSON.parse(raw);
+        } catch (e) {}
+        return typeof fallback === 'function' ? fallback() : fallback;
+      }
+
+      // 초기 상태 로드
+      var state = {
+        activeTab: 'webtoon',
+        webtoons: loadJSON('my_webtoon_novel_archive_v3', getDefaultWebtoons),
+        webtoonFolderNames: loadJSON('my_webtoon_collection_folders_v1', []),
+        selectedWebtoonFolder: 'ALL',
+        expandedWebtoonIds: [],
+        searchTitle: '',
+        userReasonInput: '',
+
+        novels: loadJSON('my_novel_archive_v1', function () {
+          var oldItems = loadJSON('my_webtoon_novel_archive_v3', []);
+          return oldItems.filter(function (w) {
+            return w.novelTitle && !/오리지널 웹툰|웹툰 원작|연재처/.test(w.novelTitle) && !/네이버 웹툰/.test(w.novelPlatform || '');
+          }).map(function (w, i) {
+            return {
+              id: 'nov-migrated-' + (w.id || i),
+              title: w.novelTitle.replace(/ \(원작 소설\)$/, ''),
+              author: w.novelAuthor || '',
+              platform: w.novelPlatform || '',
+              url: w.novelUrl || '',
+              synopsis: w.novelSynopsis || '',
+              folder: w.novelCategory || '미분류',
+              addedAt: w.updatedAt || Date.now() + i,
+              lastChapterAt: null,
+              top10Rank: null
+            };
+          });
+        }),
+        novelFolderNames: loadJSON('my_novel_collection_folders_v1', []),
+        selectedNovelFolder: 'ALL',
+        novelTitleInput: '',
+        novelAuthorInput: '',
+        novelPlatformInput: '',
+        novelUrlInput: '',
+        novelSynopsisInput: '',
+
+        toastMessage: null,
+        modal: null // { type: 'editWebtoon' | 'editNovel' | 'createFolder' | 'confirmReset', data: ... }
+      };
+
+      var toastTimer = null;
+      function showToast(msg) {
+        state.toastMessage = msg;
+        if (toastTimer) clearTimeout(toastTimer);
+        render();
+        toastTimer = setTimeout(function () {
+          state.toastMessage = null;
+          render();
+        }, 3000);
+      }
+
+      function persistAll() {
+        safeStorage.setItem('my_webtoon_novel_archive_v3', JSON.stringify(state.webtoons));
+        safeStorage.setItem('my_webtoon_collection_folders_v1', JSON.stringify(state.webtoonFolderNames));
+        safeStorage.setItem('my_novel_archive_v1', JSON.stringify(state.novels));
+        safeStorage.setItem('my_novel_collection_folders_v1', JSON.stringify(state.novelFolderNames));
+      }
+
+      function escapeHtml(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function normalizeNovelTitle(value) {
+        return String(value || '').replace(/ \(원작 소설\)$/, '').trim().toLowerCase();
+      }
+
+      function hasOriginalNovel(item) {
+        return Boolean(
+          item && item.novelTitle && item.novelUrl &&
+          !/오리지널 웹툰|웹툰 원작|연재처/.test(item.novelTitle) &&
+          !/네이버 웹툰|카카오웹툰|레진코믹스/.test(item.novelPlatform || '') &&
+          item.novelAuthor !== '인기 작가' &&
+          item.novelUrl !== 'https://series.naver.com'
+        );
+      }
+
+      function isOriginalNovelInLibrary(item) {
+        var target = normalizeNovelTitle(item && item.novelTitle);
+        return state.novels.some(function (n) {
+          return normalizeNovelTitle(n.title) === target;
+        });
+      }
+
+      function getBarClass(themeColor) {
+        if (!themeColor) return 'item-bar';
+        if (themeColor.indexOf('rose') !== -1) return 'item-bar rose';
+        if (themeColor.indexOf('blue') !== -1) return 'item-bar blue';
+        if (themeColor.indexOf('amber') !== -1) return 'item-bar amber';
+        if (themeColor.indexOf('emerald') !== -1) return 'item-bar emerald';
+        if (themeColor.indexOf('zinc') !== -1) return 'item-bar zinc';
+        return 'item-bar';
+      }
+
+      function copyTextFallback(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            showToast("목록 정보가 클립보드에 복사되었습니다!");
+          }).catch(function () {
+            execCopy(text);
+          });
+        } else {
+          execCopy(text);
+        }
+      }
+
+      function execCopy(text) {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.top = '-9999px';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast(ok ? "목록 정보가 클립보드에 복사되었습니다!" : "복사에 실패했습니다.");
+        } catch (e) {
+          showToast("복사에 실패했습니다.");
+        }
+      }
+
+      // 액션 핸들러들
+      window.appActions = {
+        setTab: function (tab) {
+          state.activeTab = tab;
+          render();
+        },
+        selectPreset: function (encodedTitle) {
+          var title = decodeURIComponent(encodedTitle);
+          state.searchTitle = title;
+          if (PRESET_WEBTOONS[title]) {
+            state.userReasonInput = PRESET_WEBTOONS[title].defaultReason;
+          }
+          render();
+        },
+        syncWebtoonInputs: function () {
+          var titleEl = document.getElementById('wt-title-input');
+          var reasonEl = document.getElementById('wt-reason-input');
+          if (titleEl) state.searchTitle = titleEl.value;
+          if (reasonEl) state.userReasonInput = reasonEl.value;
+        },
+        syncNovelInputs: function () {
+          var t = document.getElementById('nv-title-input');
+          var a = document.getElementById('nv-author-input');
+          var p = document.getElementById('nv-platform-input');
+          var u = document.getElementById('nv-url-input');
+          var s = document.getElementById('nv-synopsis-input');
+          if (t) state.novelTitleInput = t.value;
+          if (a) state.novelAuthorInput = a.value;
+          if (p) state.novelPlatformInput = p.value;
+          if (u) state.novelUrlInput = u.value;
+          if (s) state.novelSynopsisInput = s.value;
+        },
+        addWebtoon: function (e) {
+          if (e) e.preventDefault();
+          window.appActions.syncWebtoonInputs();
+          var title = (state.searchTitle || '').trim();
+          if (!title) {
+            showToast("웹툰 제목을 입력하거나 프리셋을 선택해 주세요!");
+            return;
+          }
+          if (state.webtoons.some(function (w) { return w.title.toLowerCase() === title.toLowerCase(); })) {
+            showToast("이미 소장 목록에 등록된 작품입니다.");
+            return;
+          }
+          var baseData = PRESET_WEBTOONS[title] || generateSmartWebtoonData(title);
+          var newItem = {};
+          for (var k in baseData) newItem[k] = baseData[k];
+          newItem.id = 'wt-' + Date.now();
+          newItem.title = title;
+          newItem.reason = (state.userReasonInput || '').trim() || baseData.defaultReason;
+          newItem.updatedAt = Date.now();
+          newItem.lastChapterAt = null;
+          newItem.top10Rank = null;
+          newItem.webtoonFolder = '미분류';
+
+          state.webtoons.push(newItem);
+          state.searchTitle = '';
+          state.userReasonInput = '';
+          persistAll();
+          showToast("'" + title + "'이(가) 소장 목록에 추가되었습니다!");
+        },
+        setWebtoonFolder: function (encodedFolder) {
+          state.selectedWebtoonFolder = decodeURIComponent(encodedFolder);
+          render();
+        },
+        setNovelFolder: function (encodedFolder) {
+          state.selectedNovelFolder = decodeURIComponent(encodedFolder);
+          render();
+        },
+        openCreateFolderModal: function (targetType) {
+          // targetType: 'webtoon' | 'novel' | 'editModalWebtoon'
+          state.modal = {
+            type: 'createFolder',
+            targetType: targetType,
+            folderName: ''
+          };
+          render();
+          setTimeout(function () {
+            var el = document.getElementById('modal-folder-input');
+            if (el) el.focus();
+          }, 50);
+        },
+        confirmCreateFolder: function (e) {
+          if (e) e.preventDefault();
+          var inputEl = document.getElementById('modal-folder-input');
+          var name = inputEl ? inputEl.value.trim() : '';
+          if (!name) {
+            showToast("폴더 이름을 입력해 주세요.");
+            return;
+          }
+          var targetType = state.modal && state.modal.targetType;
+          if (targetType === 'novel') {
+            if (state.novelFolderNames.some(function (f) { return f.toLowerCase() === name.toLowerCase(); })) {
+              showToast("같은 이름의 소설 폴더가 이미 있습니다.");
+              return;
+            }
+            state.novelFolderNames.push(name);
+            state.selectedNovelFolder = name;
+            state.modal = null;
+            persistAll();
+            showToast("'" + name + "' 소설 폴더를 만들었습니다.");
+          } else if (targetType === 'editModalWebtoon') {
+            if (!state.webtoonFolderNames.some(function (f) { return f.toLowerCase() === name.toLowerCase(); })) {
+              state.webtoonFolderNames.push(name);
+            }
+            var prevForm = state.modal.parentForm;
+            prevForm.webtoonFolder = name;
+            state.modal = {
+              type: 'editWebtoon',
+              form: prevForm
+            };
+            persistAll();
+            showToast("'" + name + "' 폴더가 추가되었습니다.");
+          } else {
+            if (state.webtoonFolderNames.some(function (f) { return f.toLowerCase() === name.toLowerCase(); })) {
+              showToast("같은 이름의 웹툰 폴더가 이미 있습니다.");
+              return;
+            }
+            state.webtoonFolderNames.push(name);
+            state.selectedWebtoonFolder = name;
+            state.modal = null;
+            persistAll();
+            showToast("'" + name + "' 웹툰 소장 폴더를 만들었습니다.");
+          }
+        },
+        toggleExpandWebtoon: function (id) {
+          var idx = state.expandedWebtoonIds.indexOf(id);
+          if (idx === -1) state.expandedWebtoonIds.push(id);
+          else state.expandedWebtoonIds.splice(idx, 1);
+          render();
+        },
+        triggerWebtoonUpdate: function (id) {
+          var target = null;
+          state.webtoons = state.webtoons.map(function (w) {
+            if (w.id === id) {
+              target = w;
+              var copy = {};
+              for (var k in w) copy[k] = w[k];
+              copy.lastChapterAt = Date.now();
+              return copy;
+            }
+            return w;
+          });
+          persistAll();
+          showToast("✨ '" + (target ? target.title : '') + "' 최신화 날짜를 기록했습니다.");
+        },
+        deleteWebtoon: function (id) {
+          state.webtoons = state.webtoons.filter(function (w) { return w.id !== id; });
+          persistAll();
+          showToast("목록에서 제거되었습니다.");
+        },
+        openEditWebtoon: function (id) {
+          var item = state.webtoons.find(function (w) { return w.id === id; });
+          if (!item) return;
+          var copy = {};
+          for (var k in item) copy[k] = item[k];
+          state.modal = {
+            type: 'editWebtoon',
+            form: copy
+          };
+          render();
+        },
+        addFolderInsideEditWebtoon: function () {
+          if (!state.modal || state.modal.type !== 'editWebtoon') return;
+          var rEl = document.getElementById('edit-wt-reason');
+          var fEl = document.getElementById('edit-wt-folder');
+          var wEl = document.getElementById('edit-wt-world');
+          if (rEl) state.modal.form.reason = rEl.value;
+          if (fEl) state.modal.form.webtoonFolder = fEl.value;
+          if (wEl) state.modal.form.worldSetting = wEl.value;
+          state.modal = {
+            type: 'createFolder',
+            targetType: 'editModalWebtoon',
+            parentForm: state.modal.form
+          };
+          render();
+        },
+        saveEditWebtoon: function (e) {
+          if (e) e.preventDefault();
+          if (!state.modal || state.modal.type !== 'editWebtoon') return;
+          var form = state.modal.form;
+          var rEl = document.getElementById('edit-wt-reason');
+          var fEl = document.getElementById('edit-wt-folder');
+          var wEl = document.getElementById('edit-wt-world');
+          if (rEl) form.reason = rEl.value;
+          if (fEl) form.webtoonFolder = fEl.value;
+          if (wEl) form.worldSetting = wEl.value;
+
+          state.webtoons = state.webtoons.map(function (w) {
+            return w.id === form.id ? form : w;
+          });
+          state.modal = null;
+          persistAll();
+          showToast("작품 정보가 수정되었습니다.");
+        },
+        toggleWebtoonTop10: function (id) {
+          var target = state.webtoons.find(function (w) { return w.id === id; });
+          if (!target) return;
+          if (target.top10Rank) {
+            var remaining = state.webtoons
+              .filter(function (w) { return w.id !== id && Number.isInteger(w.top10Rank) && w.top10Rank >= 1 && w.top10Rank <= 10; })
+              .sort(function (a, b) { return a.top10Rank - b.top10Rank; });
+            var rankMap = {};
+            remaining.forEach(function (w, idx) { rankMap[w.id] = idx + 1; });
+            state.webtoons.forEach(function (w) {
+              if (w.id === id) w.top10Rank = null;
+              else if (rankMap[w.id]) w.top10Rank = rankMap[w.id];
+            });
+            persistAll();
+            showToast("'" + target.title + "'을(를) 개인 TOP 10에서 제외했습니다.");
+            return;
+          }
+          var ranked = state.webtoons.filter(function (w) { return Number.isInteger(w.top10Rank) && w.top10Rank >= 1 && w.top10Rank <= 10; });
+          if (ranked.length >= 10) {
+            showToast("TOP 10은 최대 10개까지 등록할 수 있습니다.");
+            return;
+          }
+          var used = {};
+          ranked.forEach(function (w) { used[w.top10Rank] = true; });
+          var nextRank = 1;
+          while (used[nextRank] && nextRank <= 10) nextRank++;
+          target.top10Rank = nextRank;
+          persistAll();
+          showToast("'" + target.title + "'을(를) 개인 TOP 10 " + nextRank + "위에 추가했습니다.");
+        },
+        moveWebtoonTop10: function (id, direction) {
+          var ranked = state.webtoons
+            .filter(function (w) { return Number.isInteger(w.top10Rank) && w.top10Rank >= 1 && w.top10Rank <= 10; })
+            .sort(function (a, b) { return a.top10Rank - b.top10Rank; });
+          var index = ranked.findIndex(function (w) { return w.id === id; });
+          var swapIndex = index + direction;
+          if (index < 0 || swapIndex < 0 || swapIndex >= ranked.length) return;
+          var temp = ranked[index].top10Rank;
+          ranked[index].top10Rank = ranked[swapIndex].top10Rank;
+          ranked[swapIndex].top10Rank = temp;
+          persistAll();
+          render();
+        },
+        addOriginalNovelToLibrary: function (id) {
+          var item = state.webtoons.find(function (w) { return w.id === id; });
+          if (!hasOriginalNovel(item)) {
+            showToast("등록 가능한 원작 소설 정보가 없습니다.");
+            return;
+          }
+          if (isOriginalNovelInLibrary(item)) {
+            state.activeTab = 'novel';
+            showToast("이미 소설 서재에 등록되어 있습니다.");
+            return;
+          }
+          var title = item.novelTitle.replace(/ \(원작 소설\)$/, '').trim();
+          state.novels.push({
+            id: 'nov-from-' + item.id + '-' + Date.now(),
+            title: title,
+            author: item.novelAuthor || '',
+            platform: item.novelPlatform || '',
+            url: item.novelUrl || '',
+            synopsis: item.novelSynopsis || '',
+            folder: state.novelFolderNames.indexOf(item.novelCategory) !== -1 ? item.novelCategory : '미분류',
+            addedAt: Date.now(),
+            lastChapterAt: null,
+            top10Rank: null,
+            sourceWebtoonId: item.id
+          });
+          state.activeTab = 'novel';
+          state.selectedNovelFolder = 'ALL';
+          persistAll();
+          showToast("'" + title + "'을(를) 소설 서재에 추가했습니다.");
+        },
+        addNovel: function (e) {
+          if (e) e.preventDefault();
+          window.appActions.syncNovelInputs();
+          var title = (state.novelTitleInput || '').trim();
+          if (!title) {
+            showToast("소설 제목을 입력해 주세요.");
+            return;
+          }
+          if (state.novels.some(function (n) { return n.title.toLowerCase() === title.toLowerCase(); })) {
+            showToast("이미 소설 서재에 등록된 작품입니다.");
+            return;
+          }
+          state.novels.push({
+            id: 'nov-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+            title: title,
+            author: (state.novelAuthorInput || '').trim(),
+            platform: (state.novelPlatformInput || '').trim(),
+            url: (state.novelUrlInput || '').trim(),
+            synopsis: (state.novelSynopsisInput || '').trim(),
+            folder: '미분류',
+            addedAt: Date.now(),
+            lastChapterAt: null,
+            top10Rank: null
+          });
+          state.novelTitleInput = '';
+          state.novelAuthorInput = '';
+          state.novelPlatformInput = '';
+          state.novelUrlInput = '';
+          state.novelSynopsisInput = '';
+          persistAll();
+          showToast("'" + title + "'을(를) 소설 서재에 추가했습니다.");
+        },
+        triggerNovelUpdate: function (id) {
+          var target = state.novels.find(function (n) { return n.id === id; });
+          if (target) target.lastChapterAt = Date.now();
+          persistAll();
+          showToast("'" + (target ? target.title : '') + "' 최신화 날짜를 기록했습니다.");
+        },
+        changeNovelFolder: function (id, folder) {
+          var target = state.novels.find(function (n) { return n.id === id; });
+          if (target) target.folder = folder;
+          persistAll();
+          render();
+        },
+        deleteNovel: function (id) {
+          state.novels = state.novels.filter(function (n) { return n.id !== id; });
+          persistAll();
+          showToast("소설 서재에서 작품을 제거했습니다.");
+        },
+        openEditNovel: function (id) {
+          var item = state.novels.find(function (n) { return n.id === id; });
+          if (!item) return;
+          var copy = {};
+          for (var k in item) copy[k] = item[k];
+          state.modal = {
+            type: 'editNovel',
+            form: copy
+          };
+          render();
+        },
+        saveEditNovel: function (e) {
+          if (e) e.preventDefault();
+          if (!state.modal || state.modal.type !== 'editNovel') return;
+          var form = state.modal.form;
+          var t = document.getElementById('edit-nv-title');
+          var a = document.getElementById('edit-nv-author');
+          var p = document.getElementById('edit-nv-platform');
+          var u = document.getElementById('edit-nv-url');
+          var s = document.getElementById('edit-nv-synopsis');
+          if (t && t.value.trim()) form.title = t.value.trim();
+          if (a) form.author = a.value.trim();
+          if (p) form.platform = p.value.trim();
+          if (u) form.url = u.value.trim();
+          if (s) form.synopsis = s.value.trim();
+
+          state.novels = state.novels.map(function (n) { return n.id === form.id ? form : n; });
+          state.modal = null;
+          persistAll();
+          showToast("소설 정보가 수정되었습니다.");
+        },
+        toggleNovelTop10: function (id) {
+          var target = state.novels.find(function (n) { return n.id === id; });
+          if (!target) return;
+          if (target.top10Rank) {
+            var remaining = state.novels
+              .filter(function (n) { return n.id !== id && Number.isInteger(n.top10Rank) && n.top10Rank >= 1 && n.top10Rank <= 10; })
+              .sort(function (a, b) { return a.top10Rank - b.top10Rank; });
+            var rankMap = {};
+            remaining.forEach(function (n, idx) { rankMap[n.id] = idx + 1; });
+            state.novels.forEach(function (n) {
+              if (n.id === id) n.top10Rank = null;
+              else if (rankMap[n.id]) n.top10Rank = rankMap[n.id];
+            });
+            persistAll();
+            showToast("'" + target.title + "'을(를) 소설 TOP 10에서 제외했습니다.");
+            return;
+          }
+          var ranked = state.novels.filter(function (n) { return Number.isInteger(n.top10Rank) && n.top10Rank >= 1 && n.top10Rank <= 10; });
+          if (ranked.length >= 10) {
+            showToast("소설 TOP 10은 최대 10개까지 등록할 수 있습니다.");
+            return;
+          }
+          var used = {};
+          ranked.forEach(function (n) { used[n.top10Rank] = true; });
+          var rank = 1;
+          while (used[rank] && rank <= 10) rank++;
+          target.top10Rank = rank;
+          persistAll();
+          showToast("'" + target.title + "'을(를) 소설 TOP 10 " + rank + "위에 추가했습니다.");
+        },
+        moveNovelTop10: function (id, direction) {
+          var ranked = state.novels
+            .filter(function (n) { return Number.isInteger(n.top10Rank) && n.top10Rank >= 1 && n.top10Rank <= 10; })
+            .sort(function (a, b) { return a.top10Rank - b.top10Rank; });
+          var index = ranked.findIndex(function (n) { return n.id === id; });
+          var swapIndex = index + direction;
+          if (index < 0 || swapIndex < 0 || swapIndex >= ranked.length) return;
+          var temp = ranked[index].top10Rank;
+          ranked[index].top10Rank = ranked[swapIndex].top10Rank;
+          ranked[swapIndex].top10Rank = temp;
+          persistAll();
+          render();
+        },
+        openResetModal: function () {
+          state.modal = { type: 'confirmReset' };
+          render();
+        },
+        confirmReset: function () {
+          state.webtoons = getDefaultWebtoons();
+          state.modal = null;
+          persistAll();
+          showToast("기본 웹툰 목록으로 초기화되었습니다.");
+        },
+        closeModal: function () {
+          state.modal = null;
+          render();
+        },
+        shareArchive: function () {
+          var wtSummary = state.webtoons.map(function (w, idx) {
+            return (idx + 1) + ". " + w.title + " [폴더: " + (w.webtoonFolder || '미분류') + "]\n추천 이유: " + w.reason;
+          }).join('\n\n');
+          var nvSummary = state.novels.map(function (n, idx) {
+            return (idx + 1) + ". " + n.title + " [폴더: " + (n.folder || '미분류') + "]\n작가: " + (n.author || '미입력');
+          }).join('\n\n');
+          var textToCopy = "📚 [웹툰·소설 아카이브] 📚\n\n웹툰\n" + wtSummary + "\n\n소설\n" + nvSummary + "\n\n#웹툰 #소설 #개인아카이브";
+
+          if (navigator.share) {
+            navigator.share({
+              title: '웹툰·소설 아카이브',
+              text: textToCopy
+            }).catch(function (err) {
+              if (!err || err.name !== 'AbortError') {
+                copyTextFallback(textToCopy);
+              }
+            });
+          } else {
+            copyTextFallback(textToCopy);
+          }
+        }
+      };
+
+      function getUniqueFolders(customFolders, items, fieldName) {
+        var map = {};
+        var result = [];
+        customFolders.forEach(function (f) {
+          var t = (f || '').trim();
+          if (t && !map[t]) { map[t] = true; result.push(t); }
+        });
+        items.forEach(function (item) {
+          var t = ((item && item[fieldName]) || '미분류').trim();
+          if (t && !map[t]) { map[t] = true; result.push(t); }
+        });
+        return result;
+      }
+
+      function renderModal() {
+        if (!state.modal) return '';
+        var m = state.modal;
+
+        if (m.type === 'createFolder') {
+          var titleText = m.targetType === 'novel' ? '새 소설 소장 폴더 만들기' : '새 웹툰 소장 폴더 만들기';
+          var placeholder = m.targetType === 'novel' ? '예: 읽는 중, 완결작, 재독 예정' : '예: 보는 중, 완결작, 재독 예정';
+          return (
+            '<div class="modal-backdrop" onclick="if(event.target===this)window.appActions.closeModal()">' +
+              '<div class="modal-card">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #262626;padding-bottom:12px;margin-bottom:16px;">' +
+                  '<h3 style="font-size:16px;font-weight:700;color:#fff;">' + titleText + '</h3>' +
+                  '<button type="button" onclick="window.appActions.closeModal()" style="padding:6px;border-radius:8px;background:#262626;color:#a3a3a3;">' + ICONS.x + '</button>' +
+                '</div>' +
+                '<form onsubmit="window.appActions.confirmCreateFolder(event)">' +
+                  '<label style="display:block;font-size:12px;color:#d4d4d4;margin-bottom:8px;">폴더 이름</label>' +
+                  '<input id="modal-folder-input" type="text" placeholder="' + placeholder + '" />' +
+                  '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;">' +
+                    '<button type="button" onclick="window.appActions.closeModal()" style="padding:10px 16px;border-radius:10px;background:#262626;color:#d4d4d4;font-size:12px;font-weight:600;">취소</button>' +
+                    '<button type="submit" style="padding:10px 18px;border-radius:10px;background:#9333ea;color:#fff;font-size:12px;font-weight:700;">폴더 생성</button>' +
+                  '</div>' +
+                '</form>' +
+              '</div>' +
+            '</div>'
+          );
+        }
+
+        if (m.type === 'confirmReset') {
+          return (
+            '<div class="modal-backdrop" onclick="if(event.target===this)window.appActions.closeModal()">' +
+              '<div class="modal-card" style="max-width:400px;">' +
+                '<h3 style="font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;">기본 목록으로 초기화</h3>' +
+                '<p style="font-size:13px;color:#d4d4d4;margin-bottom:18px;">웹툰 소장 목록을 기본 웹툰 3종으로 초기화하시겠습니까?</p>' +
+                '<div style="display:flex;justify-content:flex-end;gap:8px;">' +
+                  '<button type="button" onclick="window.appActions.closeModal()" style="padding:10px 16px;border-radius:10px;background:#262626;color:#d4d4d4;font-size:12px;font-weight:600;">취소</button>' +
+                  '<button type="button" onclick="window.appActions.confirmReset()" style="padding:10px 18px;border-radius:10px;background:#e11d48;color:#fff;font-size:12px;font-weight:700;">초기화</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>'
+          );
+        }
+
+        if (m.type === 'editWebtoon') {
+          var form = m.form;
+          var folderOpts = getUniqueFolders(['미분류'].concat(state.webtoonFolderNames), [{ webtoonFolder: form.webtoonFolder || '미분류' }], 'webtoonFolder');
+          return (
+            '<div class="modal-backdrop" onclick="if(event.target===this)window.appActions.closeModal()">' +
+              '<div class="modal-card">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #262626;padding-bottom:12px;margin-bottom:16px;">' +
+                  '<div style="display:flex;align-items:center;gap:8px;color:#c084fc;">' + ICONS.sliders + '<h3 style="font-size:16px;font-weight:700;color:#fff;">[' + escapeHtml(form.title) + '] 정보 및 소장 분류 편집</h3></div>' +
+                  '<button type="button" onclick="window.appActions.closeModal()" style="padding:6px;border-radius:8px;background:#262626;color:#a3a3a3;">' + ICONS.x + '</button>' +
+                '</div>' +
+                '<form onsubmit="window.appActions.saveEditWebtoon(event)" style="display:flex;flex-direction:column;gap:14px;">' +
+                  '<div>' +
+                    '<label style="display:block;font-size:12px;font-weight:600;color:#c084fc;margin-bottom:6px;">입덕 코멘트 / 추천 이유</label>' +
+                    '<textarea id="edit-wt-reason" rows="2">' + escapeHtml(form.reason || '') + '</textarea>' +
+                  '</div>' +
+                  '<div style="background:rgba(59,7,100,0.22);padding:12px;border-radius:12px;border:1px solid rgba(88,28,135,0.45);">' +
+                    '<div style="font-size:12px;font-weight:700;color:#d8b4fe;margin-bottom:8px;display:flex;align-items:center;gap:6px;">' + ICONS.bookOpen + ' 웹툰 소장 폴더</div>' +
+                    '<div style="display:flex;gap:8px;">' +
+                      '<select id="edit-wt-folder" style="flex:1;">' +
+                        folderOpts.map(function (folder) {
+                          var sel = (form.webtoonFolder || '미분류') === folder ? ' selected' : '';
+                          return '<option value="' + escapeHtml(folder) + '"' + sel + '>' + escapeHtml(folder) + '</option>';
+                        }).join('') +
+                      '</select>' +
+                      '<button type="button" onclick="window.appActions.addFolderInsideEditWebtoon()" style="padding:0 14px;border-radius:12px;background:#7e22ce;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;">+ 폴더</button>' +
+                    '</div>' +
+                  '</div>' +
+                  '<div>' +
+                    '<label style="display:block;font-size:12px;font-weight:600;color:#d4d4d4;margin-bottom:6px;">세계관 설정</label>' +
+                    '<textarea id="edit-wt-world" rows="2">' + escapeHtml(form.worldSetting || '') + '</textarea>' +
+                  '</div>' +
+                  '<div style="display:flex;justify-content:flex-end;gap:8px;padding-top:14px;border-top:1px solid #262626;">' +
+                    '<button type="button" onclick="window.appActions.closeModal()" style="padding:10px 16px;border-radius:12px;background:#262626;color:#d4d4d4;font-size:12px;font-weight:600;">취소</button>' +
+                    '<button type="submit" style="padding:10px 20px;border-radius:12px;background:#9333ea;color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px;">' + ICONS.check + ' <span>저장</span></button>' +
+                  '</div>' +
+                '</form>' +
+              '</div>' +
+            '</div>'
+          );
+        }
+
+        if (m.type === 'editNovel') {
+          var nf = m.form;
+          return (
+            '<div class="modal-backdrop" onclick="if(event.target===this)window.appActions.closeModal()">' +
+              '<div class="modal-card">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #262626;padding-bottom:12px;margin-bottom:16px;">' +
+                  '<h3 style="font-size:16px;font-weight:700;color:#fff;">소설 정보 수정</h3>' +
+                  '<button type="button" onclick="window.appActions.closeModal()" style="padding:6px;border-radius:8px;background:#262626;color:#a3a3a3;">' + ICONS.x + '</button>' +
+                '</div>' +
+                '<form onsubmit="window.appActions.saveEditNovel(event)" style="display:flex;flex-direction:column;gap:12px;">' +
+                  '<div><label style="display:block;font-size:12px;color:#a5b4fc;margin-bottom:4px;">소설 제목</label><input id="edit-nv-title" type="text" value="' + escapeHtml(nf.title || '') + '" /></div>' +
+                  '<div><label style="display:block;font-size:12px;color:#d4d4d4;margin-bottom:4px;">작가</label><input id="edit-nv-author" type="text" value="' + escapeHtml(nf.author || '') + '" /></div>' +
+                  '<div><label style="display:block;font-size:12px;color:#d4d4d4;margin-bottom:4px;">연재 플랫폼</label><input id="edit-nv-platform" type="text" value="' + escapeHtml(nf.platform || '') + '" /></div>' +
+                  '<div><label style="display:block;font-size:12px;color:#d4d4d4;margin-bottom:4px;">작품 URL</label><input id="edit-nv-url" type="text" value="' + escapeHtml(nf.url || '') + '" /></div>' +
+                  '<div><label style="display:block;font-size:12px;color:#d4d4d4;margin-bottom:4px;">작품 소개 / 시놉시스</label><textarea id="edit-nv-synopsis" rows="3">' + escapeHtml(nf.synopsis || '') + '</textarea></div>' +
+                  '<div style="display:flex;justify-content:flex-end;gap:8px;padding-top:12px;border-top:1px solid #262626;">' +
+                    '<button type="button" onclick="window.appActions.closeModal()" style="padding:10px 16px;border-radius:12px;background:#262626;color:#d4d4d4;font-size:12px;font-weight:600;">취소</button>' +
+                    '<button type="submit" style="padding:10px 20px;border-radius:12px;background:#4f46e5;color:#fff;font-size:12px;font-weight:700;">저장</button>' +
+                  '</div>' +
+                '</form>' +
+              '</div>' +
+            '</div>'
+          );
+        }
+
+        return '';
+      }
+
+      function render() {
+        var webtoonFolders = getUniqueFolders(state.webtoonFolderNames, state.webtoons, 'webtoonFolder');
+        var visibleWebtoons = state.webtoons.filter(function (w) {
+          return state.selectedWebtoonFolder === 'ALL' || (w.webtoonFolder || '미분류') === state.selectedWebtoonFolder;
+        });
+        var top10Webtoons = state.webtoons
+          .filter(function (w) { return Number.isInteger(w.top10Rank) && w.top10Rank >= 1 && w.top10Rank <= 10; })
+          .sort(function (a, b) { return a.top10Rank - b.top10Rank; });
+
+        var novelFolders = getUniqueFolders(state.novelFolderNames, state.novels, 'folder');
+        var visibleNovels = state.novels.filter(function (n) {
+          return state.selectedNovelFolder === 'ALL' || (n.folder || '미분류') === state.selectedNovelFolder;
+        });
+        var top10Novels = state.novels
+          .filter(function (n) { return Number.isInteger(n.top10Rank) && n.top10Rank >= 1 && n.top10Rank <= 10; })
+          .sort(function (a, b) { return a.top10Rank - b.top10Rank; });
+
+        var html = '';
+
+        if (state.toastMessage) {
+          html += '<div class="toast-box"><span style="color:#c084fc;display:flex;">' + ICONS.sparkles + '</span><span>' + escapeHtml(state.toastMessage) + '</span></div>';
+        }
+
+        // 상단 헤더
+        html +=
+          '<header class="ios-safe-header">' +
+            '<div class="container header-top">' +
+              '<div class="brand-row">' +
+                '<div class="brand-left">' +
+                  '<div class="brand-icon">' + ICONS.bookOpen + '</div>' +
+                  '<div>' +
+                    '<h1 class="brand-title">웹툰·소설 아카이브</h1>' +
+                    '<p class="brand-sub">웹툰과 소설을 독립적으로 관리하는 개인 아카이브</p>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="header-actions">' +
+                '<div class="count-pill">' +
+                  '<span style="color:#a3a3a3;">등록 작품:</span>' +
+                  '<span style="font-weight:700;color:#c084fc;">' + (state.webtoons.length + state.novels.length) + '개</span>' +
+                '</div>' +
+                '<div style="display:flex;align-items:center;gap:8px;">' +
+                  '<button type="button" onclick="window.appActions.shareArchive()" class="btn-pill"><span style="color:#818cf8;display:flex;">' + ICONS.share + '</span><span>공유</span></button>' +
+                  '<button type="button" onclick="window.appActions.openResetModal()" title="기본값으로 초기화" class="btn-icon-circle">' + ICONS.rotateCcw + '</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="container tab-bar">' +
+              '<button type="button" onclick="window.appActions.setTab(\'webtoon\')" class="tab-btn ' + (state.activeTab === 'webtoon' ? 'active-purple' : '') + '">' +
+                ICONS.sparkles + '<span>웹툰 소장 (' + state.webtoons.length + ')</span>' +
+              '</button>' +
+              '<button type="button" onclick="window.appActions.setTab(\'top10\')" class="tab-btn ' + (state.activeTab === 'top10' ? 'active-amber' : '') + '">' +
+                ICONS.flame + '<span>개인 TOP 10 (' + top10Webtoons.length + '/10)</span>' +
+              '</button>' +
+              '<button type="button" onclick="window.appActions.setTab(\'novel\')" class="tab-btn ' + (state.activeTab === 'novel' ? 'active-indigo' : '') + '">' +
+                ICONS.bookOpen + '<span>소설 서재 (' + state.novels.length + ')</span>' +
+              '</button>' +
+              '<button type="button" onclick="window.appActions.setTab(\'novelTop10\')" class="tab-btn ' + (state.activeTab === 'novelTop10' ? 'active-amber' : '') + '">' +
+                ICONS.flame + '<span>소설 TOP 10 (' + top10Novels.length + '/10)</span>' +
+              '</button>' +
+            '</div>' +
+          '</header>';
+
+        html += '<main class="container" style="padding-top:22px;">';
+
+        // 1. 웹툰 탭
+        if (state.activeTab === 'webtoon') {
+          var presetButtons = Object.keys(PRESET_WEBTOONS).map(function (title) {
+            var active = state.searchTitle === title ? ' active' : '';
+            return '<button type="button" onclick="window.appActions.selectPreset(\'' + encodeURIComponent(title) + '\')" class="preset-chip' + active + '">' + escapeHtml(title) + '</button>';
+          }).join('');
+
+          var folderFilterButtons = '<button type="button" onclick="window.appActions.setWebtoonFolder(\'ALL\')" class="folder-chip ' + (state.selectedWebtoonFolder === 'ALL' ? 'active-purple' : '') + '">전체 보기 (' + state.webtoons.length + ')</button>';
+          webtoonFolders.forEach(function (folder) {
+            var count = state.webtoons.filter(function (w) { return (w.webtoonFolder || '미분류') === folder; }).length;
+            var active = state.selectedWebtoonFolder === folder ? 'active-purple' : '';
+            folderFilterButtons += '<button type="button" onclick="window.appActions.setWebtoonFolder(\'' + encodeURIComponent(folder) + '\')" class="folder-chip ' + active + '">' + escapeHtml(folder) + ' (' + count + ')</button>';
+          });
+
+          html +=
+            '<section class="section-card">' +
+              '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+                '<span style="color:#c084fc;display:flex;">' + ICONS.sparkles + '</span>' +
+                '<h2 style="font-size:15px;font-weight:700;color:#e5e5e5;">웹툰 소장 목록에 작품 추가하기</h2>' +
+              '</div>' +
+              '<div style="margin-bottom:14px;">' +
+                '<label style="font-size:12px;color:#a3a3a3;display:block;margin-bottom:8px;font-weight:500;">인기 추천 작품 빠른 선택:</label>' +
+                '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + presetButtons + '</div>' +
+              '</div>' +
+              '<form onsubmit="window.appActions.addWebtoon(event)">' +
+                '<div class="form-grid-3" style="margin-bottom:14px;">' +
+                  '<div>' +
+                    '<label style="font-size:12px;color:#a3a3a3;display:block;margin-bottom:6px;font-weight:500;">웹툰 제목</label>' +
+                    '<input id="wt-title-input" type="text" value="' + escapeHtml(state.searchTitle) + '" oninput="window.appActions.syncWebtoonInputs()" placeholder="예: 전지적 독자 시점..." />' +
+                  '</div>' +
+                  '<div>' +
+                    '<label style="font-size:12px;color:#a3a3a3;display:block;margin-bottom:6px;font-weight:500;">추천 코멘트 / 입덕 이유 (선택사항)</label>' +
+                    '<input id="wt-reason-input" type="text" value="' + escapeHtml(state.userReasonInput) + '" oninput="window.appActions.syncWebtoonInputs()" placeholder="예: 세계관 설정이 너무 탄탄하고 몰입감 최고!" />' +
+                  '</div>' +
+                '</div>' +
+                '<div style="display:flex;justify-content:flex-end;">' +
+                  '<button type="submit" class="primary-submit-btn">' + ICONS.plus + '<span>아카이브에 등록하기</span></button>' +
+                '</div>' +
+              '</form>' +
+            '</section>' +
+
+            '<section class="section-card" style="padding:16px;">' +
+              '<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">' +
+                '<div>' +
+                  '<h3 style="font-size:14px;font-weight:700;color:#fff;">웹툰 소장 폴더</h3>' +
+                  '<p style="font-size:12px;color:#a3a3a3;margin-top:2px;">폴더를 만들어 작품을 분류하세요. 최신화 반영은 날짜만 기록하고 목록 위치는 바꾸지 않습니다.</p>' +
+                '</div>' +
+                '<button type="button" onclick="window.appActions.openCreateFolderModal(\'webtoon\')" style="font-size:12px;padding:8px 14px;border-radius:12px;font-weight:700;background:#9333ea;color:#fff;display:inline-flex;align-items:center;gap:4px;">' + ICONS.plus + ' 폴더 만들기</button>' +
+              '</div>' +
+              '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + folderFilterButtons + '</div>' +
+            '</section>';
+
+          if (visibleWebtoons.length === 0) {
+            html += '<div class="empty-box"><div style="color:#525252;display:flex;justify-content:center;margin-bottom:10px;">' + ICONS.bookOpen + '</div><p style="color:#a3a3a3;font-size:14px;">등록된 작품이 없습니다.</p></div>';
+          } else {
+            visibleWebtoons.forEach(function (item, index) {
+              var isExpanded = state.expandedWebtoonIds.indexOf(item.id) !== -1;
+              var origBtn = '';
+              if (hasOriginalNovel(item)) {
+                var inLib = isOriginalNovelInLibrary(item);
+                origBtn = '<button type="button" onclick="window.appActions.addOriginalNovelToLibrary(\'' + item.id + '\')" class="action-btn ' + (inLib ? 'emerald-done' : 'indigo-solid') + '">' + ICONS.bookOpen + '<span>' + (inLib ? '소설 서재 등록됨' : '원작 소설 → 서재 추가') + '</span></button>';
+              }
+              html +=
+                '<div class="item-card">' +
+                  '<div class="' + getBarClass(item.themeColor) + '"></div>' +
+                  '<div class="item-body">' +
+                    '<div style="display:flex;align-items:flex-start;gap:12px;min-width:0;flex:1;">' +
+                      '<div class="rank-badge">#' + (index + 1) + '</div>' +
+                      '<div style="min-width:0;flex:1;">' +
+                        '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">' +
+                          '<h3 style="font-weight:700;color:#fff;font-size:16px;word-break:break-word;">' + escapeHtml(item.title) + '</h3>' +
+                          '<span style="font-size:11px;padding:2px 8px;border-radius:9999px;background:#262626;color:#d8b4fe;border:1px solid rgba(88,28,135,0.5);">' + escapeHtml(item.genre || '장르 미입력') + '</span>' +
+                        '</div>' +
+                        '<p style="font-size:12px;color:#737373;margin-top:4px;">최신화 반영: ' + new Date(item.lastChapterAt || item.updatedAt || 0).toLocaleString('ko-KR') + ' · 소장 폴더: ' + escapeHtml(item.webtoonFolder || '미분류') + '</p>' +
+                        (item.reason ? '<p style="font-size:12px;color:#d4d4d4;margin-top:4px;">' + escapeHtml(item.reason) + '</p>' : '') +
+                      '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">' +
+                      '<button type="button" onclick="window.appActions.toggleWebtoonTop10(\'' + item.id + '\')" class="action-btn ' + (item.top10Rank ? 'amber-active' : '') + '">' + ICONS.flame + '<span>' + (item.top10Rank ? 'TOP ' + item.top10Rank : 'TOP10 추가') + '</span></button>' +
+                      '<button type="button" onclick="window.appActions.triggerWebtoonUpdate(\'' + item.id + '\')" class="action-btn orange-grad">' + ICONS.bell + '<span>최신화 반영</span></button>' +
+                      origBtn +
+                      '<button type="button" onclick="window.appActions.toggleExpandWebtoon(\'' + item.id + '\')" class="action-btn">' + (isExpanded ? '간략히' : '상세 보기') + '</button>' +
+                      '<button type="button" onclick="window.appActions.openEditWebtoon(\'' + item.id + '\')" class="action-btn"><span style="color:#c084fc;display:flex;">' + ICONS.edit + '</span><span>수정</span></button>' +
+                      '<button type="button" onclick="window.appActions.deleteWebtoon(\'' + item.id + '\')" class="action-btn danger" title="삭제">' + ICONS.trash + '</button>' +
+                    '</div>' +
+                  '</div>' +
+                  (isExpanded ? (
+                    '<div style="padding:12px 16px 16px;border-top:1px solid #262626;display:flex;flex-direction:column;gap:10px;">' +
+                      '<div><p style="font-size:12px;color:#d8b4fe;font-weight:700;margin-bottom:3px;">추천 코멘트</p><p style="font-size:13px;color:#e5e5e5;white-space:pre-wrap;">' + escapeHtml(item.reason || '입력된 코멘트가 없습니다.') + '</p></div>' +
+                      '<div><p style="font-size:12px;color:#a3a3a3;font-weight:700;margin-bottom:3px;">세계관 설정</p><p style="font-size:13px;color:#d4d4d4;">' + escapeHtml(item.worldSetting || '설정 정보가 없습니다.') + '</p></div>' +
+                    '</div>'
+                  ) : '') +
+                '</div>';
+            });
+          }
+        }
+
+        // 2. 웹툰 TOP 10 탭
+        if (state.activeTab === 'top10') {
+          html +=
+            '<section class="banner-amber">' +
+              '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span style="color:#fbbf24;display:flex;">' + ICONS.flame + '</span><h2 style="font-size:18px;font-weight:800;color:#fff;">나만의 웹툰 TOP 10</h2></div>' +
+              '<p style="font-size:13px;color:#d4d4d4;">웹툰 소장 목록에서 TOP10 추가를 눌러 직접 선정하세요. 위·아래 버튼으로 개인 순위를 조정할 수 있습니다. 최대 10개까지 등록됩니다.</p>' +
+            '</section>';
+
+          if (top10Webtoons.length === 0) {
+            html +=
+              '<div class="empty-box">' +
+                '<div style="color:#525252;display:flex;justify-content:center;margin-bottom:10px;">' + ICONS.flame + '</div>' +
+                '<p style="color:#d4d4d4;font-weight:700;">아직 TOP 10 작품이 없습니다.</p>' +
+                '<p style="font-size:12px;color:#737373;margin-top:4px;">웹툰 소장 페이지에서 마음에 드는 작품을 추가해 주세요.</p>' +
+                '<button type="button" onclick="window.appActions.setTab(\'webtoon\')" style="margin-top:14px;padding:9px 16px;border-radius:12px;background:#9333ea;color:#fff;font-size:13px;font-weight:700;">웹툰 소장으로 이동</button>' +
+              '</div>';
+          } else {
+            top10Webtoons.forEach(function (item, idx) {
+              html +=
+                '<div class="item-card" style="padding:14px;display:flex;align-items:center;gap:12px;">' +
+                  '<div class="rank-badge amber">' + item.top10Rank + '</div>' +
+                  '<div style="min-width:0;flex:1;">' +
+                    '<h3 style="font-weight:700;color:#fff;font-size:15px;">' + escapeHtml(item.title) + '</h3>' +
+                    '<p style="font-size:12px;color:#a3a3a3;margin-top:2px;">' + escapeHtml(item.genre || '장르 미입력') + ' · 소장 폴더: ' + escapeHtml(item.webtoonFolder || '미분류') + '</p>' +
+                    (item.reason ? '<p style="font-size:12px;color:#d4d4d4;margin-top:4px;">' + escapeHtml(item.reason) + '</p>' : '') +
+                  '</div>' +
+                  '<div style="display:flex;flex-direction:column;gap:4px;">' +
+                    '<button type="button" ' + (idx === 0 ? 'disabled' : '') + ' onclick="window.appActions.moveWebtoonTop10(\'' + item.id + '\', -1)" style="padding:4px 9px;border-radius:6px;background:#262626;font-size:11px;">▲</button>' +
+                    '<button type="button" ' + (idx === top10Webtoons.length - 1 ? 'disabled' : '') + ' onclick="window.appActions.moveWebtoonTop10(\'' + item.id + '\', 1)" style="padding:4px 9px;border-radius:6px;background:#262626;font-size:11px;">▼</button>' +
+                    '<button type="button" onclick="window.appActions.toggleWebtoonTop10(\'' + item.id + '\')" style="padding:4px 9px;border-radius:6px;background:#4c0519;color:#fda4af;font-size:11px;">제외</button>' +
+                  '</div>' +
+                '</div>';
+            });
+          }
+        }
+
+        // 3. 독립 소설 서재 탭
+        if (state.activeTab === 'novel') {
+          var novelFolderBtns = '<button type="button" onclick="window.appActions.setNovelFolder(\'ALL\')" class="folder-chip ' + (state.selectedNovelFolder === 'ALL' ? 'active-indigo' : '') + '">전체 (' + state.novels.length + ')</button>';
+          novelFolders.forEach(function (folder) {
+            var count = state.novels.filter(function (n) { return (n.folder || '미분류') === folder; }).length;
+            var active = state.selectedNovelFolder === folder ? 'active-indigo' : '';
+            novelFolderBtns += '<button type="button" onclick="window.appActions.setNovelFolder(\'' + encodeURIComponent(folder) + '\')" class="folder-chip ' + active + '">' + escapeHtml(folder) + ' (' + count + ')</button>';
+          });
+
+          html +=
+            '<section class="section-card">' +
+              '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+                '<span style="color:#818cf8;display:flex;">' + ICONS.bookOpen + '</span>' +
+                '<h2 style="font-size:15px;font-weight:700;color:#f5f5f5;">소설 서재에 작품 추가하기</h2>' +
+              '</div>' +
+              '<form onsubmit="window.appActions.addNovel(event)" style="display:flex;flex-direction:column;gap:10px;">' +
+                '<div class="form-grid-2">' +
+                  '<input id="nv-title-input" value="' + escapeHtml(state.novelTitleInput) + '" oninput="window.appActions.syncNovelInputs()" placeholder="소설 제목 (필수)" />' +
+                  '<input id="nv-author-input" value="' + escapeHtml(state.novelAuthorInput) + '" oninput="window.appActions.syncNovelInputs()" placeholder="작가 (선택)" />' +
+                  '<input id="nv-platform-input" value="' + escapeHtml(state.novelPlatformInput) + '" oninput="window.appActions.syncNovelInputs()" placeholder="연재 플랫폼 (예: 문피아, 카카오페이지)" />' +
+                  '<input id="nv-url-input" value="' + escapeHtml(state.novelUrlInput) + '" oninput="window.appActions.syncNovelInputs()" placeholder="작품 URL (선택)" />' +
+                '</div>' +
+                '<textarea id="nv-synopsis-input" rows="2" oninput="window.appActions.syncNovelInputs()" placeholder="작품 소개 / 시놉시스 (선택)">' + escapeHtml(state.novelSynopsisInput) + '</textarea>' +
+                '<div><button type="submit" style="padding:10px 18px;border-radius:12px;background:#4f46e5;color:#fff;font-size:13px;font-weight:700;">+ 소설 추가</button></div>' +
+              '</form>' +
+            '</section>' +
+
+            '<section class="banner-indigo">' +
+              '<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">' +
+                '<div><h2 style="font-size:16px;font-weight:700;color:#fff;">소설 소장 폴더</h2><p style="font-size:12px;color:#a3a3a3;margin-top:2px;">웹툰 폴더와 별개로 소설을 자유롭게 분류할 수 있습니다.</p></div>' +
+                '<button type="button" onclick="window.appActions.openCreateFolderModal(\'novel\')" style="padding:8px 14px;border-radius:12px;background:#4f46e5;color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">' + ICONS.plus + ' 폴더 만들기</button>' +
+              '</div>' +
+              '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + novelFolderBtns + '</div>' +
+            '</section>';
+
+          if (visibleNovels.length === 0) {
+            html += '<div class="empty-box"><div style="color:#525252;display:flex;justify-content:center;margin-bottom:10px;">' + ICONS.bookOpen + '</div><p style="color:#d4d4d4;font-weight:700;">이 목록에는 소설이 없습니다.</p><p style="font-size:12px;color:#737373;margin-top:4px;">위 입력란에서 소설을 추가하거나 다른 폴더를 선택해 주세요.</p></div>';
+          } else {
+            visibleNovels.forEach(function (item, index) {
+              var allFoldersForSelect = getUniqueFolders(['미분류'].concat(novelFolders), [{ folder: item.folder || '미분류' }], 'folder');
+              html +=
+                '<div class="item-card">' +
+                  '<div class="item-body">' +
+                    '<div style="display:flex;align-items:flex-start;gap:12px;min-width:0;flex:1;">' +
+                      '<div class="rank-badge indigo">#' + (index + 1) + '</div>' +
+                      '<div style="min-width:0;flex:1;">' +
+                        '<h3 style="font-weight:700;color:#fff;font-size:16px;word-break:break-word;">' + escapeHtml(item.title) + '</h3>' +
+                        '<p style="font-size:12px;color:#a3a3a3;margin-top:4px;">작가: ' + escapeHtml(item.author || '미입력') + ' · 플랫폼: ' + escapeHtml(item.platform || '미입력') + '</p>' +
+                        '<p style="font-size:12px;color:#737373;margin-top:2px;">최신화 반영: ' + (item.lastChapterAt ? new Date(item.lastChapterAt).toLocaleString('ko-KR') : '아직 기록 없음') + ' · 폴더: ' + escapeHtml(item.folder || '미분류') + '</p>' +
+                        (item.synopsis ? '<p style="font-size:13px;color:#d4d4d4;margin-top:6px;white-space:pre-wrap;">' + escapeHtml(item.synopsis) + '</p>' : '') +
+                      '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">' +
+                      '<button type="button" onclick="window.appActions.toggleNovelTop10(\'' + item.id + '\')" class="action-btn ' + (item.top10Rank ? 'amber-active' : '') + '">' + (item.top10Rank ? 'TOP ' + item.top10Rank : 'TOP10 추가') + '</button>' +
+                      '<button type="button" onclick="window.appActions.triggerNovelUpdate(\'' + item.id + '\')" class="action-btn orange-grad">최신화 반영</button>' +
+                      '<select aria-label="소장 폴더" onchange="window.appActions.changeNovelFolder(\'' + item.id + '\', this.value)" style="width:auto;font-size:12px !important;padding:6px 26px 6px 10px;background-color:#262626;border-radius:9px;">' +
+                        allFoldersForSelect.map(function (f) {
+                          var sel = (item.folder || '미분류') === f ? ' selected' : '';
+                          return '<option value="' + escapeHtml(f) + '"' + sel + '>' + escapeHtml(f) + '</option>';
+                        }).join('') +
+                      '</select>' +
+                      '<button type="button" onclick="window.appActions.openEditNovel(\'' + item.id + '\')" class="action-btn">수정</button>' +
+                      (item.url ? '<a href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer" class="action-btn indigo-solid">작품 보기 ' + ICONS.externalLink + '</a>' : '') +
+                      '<button type="button" onclick="window.appActions.deleteNovel(\'' + item.id + '\')" class="action-btn danger">삭제</button>' +
+                    '</div>' +
+                  '</div>' +
+                '</div>';
+            });
+          }
+        }
+
+        // 4. 소설 TOP 10 탭
+        if (state.activeTab === 'novelTop10') {
+          html +=
+            '<section class="banner-amber">' +
+              '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span style="color:#fbbf24;display:flex;">' + ICONS.flame + '</span><h2 style="font-size:18px;font-weight:800;color:#fff;">나만의 소설 TOP 10</h2></div>' +
+              '<p style="font-size:13px;color:#d4d4d4;">소설 서재에서 TOP10 추가를 누르고, 위·아래 버튼으로 순위를 조정하세요. 웹툰 TOP 10과 별도로 저장됩니다.</p>' +
+            '</section>';
+
+          if (top10Novels.length === 0) {
+            html +=
+              '<div class="empty-box">' +
+                '<div style="color:#525252;display:flex;justify-content:center;margin-bottom:10px;">' + ICONS.flame + '</div>' +
+                '<p style="color:#d4d4d4;font-weight:700;">아직 소설 TOP 10 작품이 없습니다.</p>' +
+                '<button type="button" onclick="window.appActions.setTab(\'novel\')" style="margin-top:14px;padding:9px 16px;border-radius:12px;background:#4f46e5;color:#fff;font-size:13px;font-weight:700;">소설 서재로 이동</button>' +
+              '</div>';
+          } else {
+            top10Novels.forEach(function (item, idx) {
+              html +=
+                '<div class="item-card" style="padding:14px;display:flex;align-items:center;gap:12px;">' +
+                  '<div class="rank-badge amber">' + item.top10Rank + '</div>' +
+                  '<div style="min-width:0;flex:1;">' +
+                    '<h3 style="font-weight:700;color:#fff;font-size:15px;">' + escapeHtml(item.title) + '</h3>' +
+                    '<p style="font-size:12px;color:#a3a3a3;margin-top:2px;">' + escapeHtml(item.author || '작가 미입력') + ' · ' + escapeHtml(item.platform || '플랫폼 미입력') + ' · 폴더: ' + escapeHtml(item.folder || '미분류') + '</p>' +
+                  '</div>' +
+                  '<div style="display:flex;flex-direction:column;gap:4px;">' +
+                    '<button type="button" ' + (idx === 0 ? 'disabled' : '') + ' onclick="window.appActions.moveNovelTop10(\'' + item.id + '\', -1)" style="padding:4px 9px;border-radius:6px;background:#262626;font-size:11px;">▲</button>' +
+                    '<button type="button" ' + (idx === top10Novels.length - 1 ? 'disabled' : '') + ' onclick="window.appActions.moveNovelTop10(\'' + item.id + '\', 1)" style="padding:4px 9px;border-radius:6px;background:#262626;font-size:11px;">▼</button>' +
+                    '<button type="button" onclick="window.appActions.toggleNovelTop10(\'' + item.id + '\')" style="padding:4px 9px;border-radius:6px;background:#4c0519;color:#fda4af;font-size:11px;">제외</button>' +
+                  '</div>' +
+                '</div>';
+            });
+          }
+        }
+
+        html += '</main>';
+        html += renderModal();
+
+        var root = document.getElementById('app');
+        if (root) root.innerHTML = html;
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>
