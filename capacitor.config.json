@@ -2,5 +2,8 @@
   "appId": "com.mywebtoon.top5",
   "appName": "웹툰연구소",
   "webDir": "www",
+  "server": {
+    "url": "https://본인아이디.github.io/저장소이름/",
+    "cleartext": true
   "bundledWebRuntime": false
 }
