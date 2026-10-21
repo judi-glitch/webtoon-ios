@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: 1. 내 코드 가져오기
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 2. Node.js 설치
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
 
@@ -51,7 +51,7 @@ jobs:
           zip -r WebtoonLab.ipa Payload
 
       - name: 7. 완성된 .ipa 파일 다운로드 가능하게 올리기
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: WebtoonLab-iOS-IPA
           path: WebtoonLab.ipa
