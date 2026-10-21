@@ -51,7 +51,7 @@ jobs:
           zip -r WebtoonLab.ipa Payload
 
       - name: 7. 완성된 .ipa 파일 다운로드 가능하게 올리기
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: WebtoonLab-iOS-IPA
           path: WebtoonLab.ipa
