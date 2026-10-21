@@ -3,6 +3,7 @@
   "appName": "웹툰연구소",
   "webDir": "www",
   "server": {
-    "url": "https:/judi-glitch.github.io/webtoon-ios/",
+    "url": "https://judi-glitch.github.io/webtoon-ios/",
     "cleartext": true
+  }
 }
